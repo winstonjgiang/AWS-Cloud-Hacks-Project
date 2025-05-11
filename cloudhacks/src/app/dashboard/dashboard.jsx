@@ -2,7 +2,7 @@
 
 import { useAuth } from "react-oidc-context";
 import { useEffect, useState } from "react";
-import { userMap, eventMap } from "../utils/userMap";
+import { userMap, eventMap } from "../utils/dbPrepMap";
 import ChakraNav from "./ui/ChakraNav";
 import loadGapiClient from "../utils/gapi";
 import axios from "axios";
@@ -13,7 +13,6 @@ import { analyzeData } from "../utils/analyzeData";
 export default function Dashboard() {
   const auth = useAuth();
   const [categoryData, setCategoryData] = useState(null);
-  const [googleUser, setGoogleUser] = useState(null);
   const [recurringEvents, setRecurringEvents] = useState(null);
   const [summary, setSummary] = useState(null);
   const [page, setPage] = useState("home");
@@ -40,13 +39,11 @@ export default function Dashboard() {
 
       try {
         const googleResponse = await fetchEvents();
-        if (!googleResponse) return;
-
+        if (!googleResponse) return; //If no google response, return
         const { googleUser, events: fetchedEvents } = googleResponse;
-        setGoogleUser(googleUser);
 
         const authenticated = userMap(auth, googleResponse.googleUser);
-        setPage("dashboard");
+        setPage("dashboard"); //Change component to dashboard once authenticated
 
         if (!authenticated) {
           setIsAuthenticated(false);
@@ -65,48 +62,64 @@ export default function Dashboard() {
           console.error("Failed to fetch user:", error);
         }
 
+        /*If user does not exist, create user and post events to database */
         if (!existingUser.data.exists) {
-          await axios.post("/api/user", authenticated);
-        }
-
-
-        if (!existingUser.data.exists) {
-          const post_events = fetchedEvents.map((event) => {
+          await axios.post("/api/user", authenticated); //Create user in database
+          const post_events = fetchedEvents.map(async (event) => {
             const event_promise = eventMap(
               googleResponse.googleUser.googleId,
               event
             );
             return axios.post("/api/events", event_promise);
           });
-          const results = await Promise.all(post_events);
-          console.log("All events processed:", results);
+          await Promise.all(post_events); //await all events to be posted to database
         }
-        await analyzeData(fetchedEvents, googleUser, setCategoryData, setSummary, setRecurringEvents, setAiTips);
 
+        await analyzeData(
+          fetchedEvents,
+          googleUser,
+          setCategoryData,
+          setSummary,
+          setRecurringEvents,
+          setAiTips
+        );
       } catch (error) {
         console.error("Failed to initialize dashboard:", error);
       }
     };
-
     initializeDashboard();
-  }, [auth]);
+  }, [auth]); //Run initializeDashboard when auth changes
 
   return (
     <>
-      <ChakraNav auth={auth} page={page} setPage={setPage} isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />
+      <ChakraNav
+        auth={auth}
+        page={page}
+        setPage={setPage}
+        isAuthenticated={isAuthenticated}
+        setIsAuthenticated={setIsAuthenticated}
+      />
 
       <div className={page === "home" ? "overflow-hidden" : "overflow-auto"}>
-        {page === "home" && <LoginForm auth={auth} page={page} setPage={setPage} />}
-        {page === "dashboard" && (
-          auth.isAuthenticated
-            ? <UserDashboard
+        {page === "home" && (
+          <LoginForm auth={auth} page={page} setPage={setPage} />
+        )}
+        {page === "dashboard" &&
+          (auth.isAuthenticated ? (
+            <UserDashboard
               categoryData={categoryData}
               summary={summary}
               recurringEvents={recurringEvents}
               aiTips={aiTips}
             />
-            : <LoginForm auth={auth} isAuthenticated={isAuthenticated} page={page} setPage={setPage} />
-        )}
+          ) : (
+            <LoginForm
+              auth={auth}
+              isAuthenticated={isAuthenticated}
+              page={page}
+              setPage={setPage}
+            />
+          ))}
       </div>
     </>
   );

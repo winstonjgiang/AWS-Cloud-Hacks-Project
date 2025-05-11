@@ -22,7 +22,12 @@ import CategoryPieChart from "./CategoryPieChart";
 import AdditionalDetailPanel from "./AdditionalDetailPanel";
 import TipsPanel from "./Tips";
 
-export default function VisualizationSection({ categoryData, isLoading, recurringEvents, aiTips }) {
+export default function VisualizationSection({
+  categoryData,
+  isLoading,
+  recurringEvents,
+  aiTips,
+}) {
   const cardBg = useColorModeValue("white", "gray.700");
   const borderColor = useColorModeValue("gray.200", "gray.600");
   const titleColor = "#232F3E";
@@ -31,11 +36,17 @@ export default function VisualizationSection({ categoryData, isLoading, recurrin
   const progressBoxBg = useColorModeValue("gray.50", "gray.700");
 
   // Add data validation check
-  const isDataValid = categoryData && Array.isArray(categoryData) && categoryData.length > 0;
+  const isDataValid =
+    categoryData && Array.isArray(categoryData) && categoryData.length > 0;
 
   if (isLoading || !isDataValid) {
     return (
-      <Card bg={cardBg} borderColor={borderColor} borderWidth="1px" borderRadius="lg">
+      <Card
+        bg={cardBg}
+        borderColor={borderColor}
+        borderWidth="1px"
+        borderRadius="lg"
+      >
         <CardBody>
           <Heading size="md" mb={6} color={titleColor}>
             Your Week,
@@ -44,14 +55,20 @@ export default function VisualizationSection({ categoryData, isLoading, recurrin
             </Text>
           </Heading>
           <Box height="400px" position="relative">
-            <Flex direction="column" align="center" justify="center" height="100%" gap={4}>
+            <Flex
+              direction="column"
+              align="center"
+              justify="center"
+              height="100%"
+              gap={4}
+            >
               <Spinner
-                thickness='4px'
-                speed='0.65s'
-                emptyColor='gray.200'
+                thickness="4px"
+                speed="0.65s"
+                emptyColor="gray.200"
                 color={accentColor}
-                size='xl'
-                label='Loading data'
+                size="xl"
+                label="Loading data"
               />
               <Text color="gray.500" fontSize="sm">
                 Loading your weekly insights...
@@ -83,7 +100,12 @@ export default function VisualizationSection({ categoryData, isLoading, recurrin
   };
 
   return (
-    <Card bg={cardBg} borderColor={borderColor} borderWidth="1px" borderRadius="lg">
+    <Card
+      bg={cardBg}
+      borderColor={borderColor}
+      borderWidth="1px"
+      borderRadius="lg"
+    >
       <CardBody>
         <Heading size="md" mb={6} color={titleColor}>
           Your Week,
@@ -105,48 +127,61 @@ export default function VisualizationSection({ categoryData, isLoading, recurrin
                 </Box>
                 <Box flex="1">
                   <Stack spacing={6}>
-                    {isDataValid && categoryData.map((cat, i) => {
-                      const [hours = 0, events = 0] = Array.isArray(cat.value) ? cat.value : [0, 0];
-                      const totalEvents = getTotalEvents(categoryData);
-                      const eventPct = calculateEventPercentage(events, totalEvents);
-                      const hrsPerDay = calculateHoursPerDay(hours);
-                      const colors = ["blue.400", "green.400", "yellow.400"];
+                    {isDataValid &&
+                      categoryData.map((cat, i) => {
+                        const [hours = 0, events = 0] = Array.isArray(cat.value)
+                          ? cat.value
+                          : [0, 0];
+                        const totalEvents = getTotalEvents(categoryData);
+                        const eventPct = calculateEventPercentage(
+                          events,
+                          totalEvents
+                        );
+                        const hrsPerDay = calculateHoursPerDay(hours);
+                        const colors = ["blue.400", "green.400", "yellow.400"];
 
-                      return (
-                        <Box key={i}>
-                          <Flex justify="space-between" align="center" mb={2}>
-                            <Flex align="center">
-                              <Box boxSize={3} rounded="full" bg={colors[i]} mr={2} />
-                              <Text fontWeight="medium">{cat.name}</Text>
-                            </Flex>
-                            <Text fontWeight="bold">{events || 0} events</Text>
-                          </Flex>
-                          <Box
-                            borderWidth="1px"
-                            p={4}
-                            borderRadius="md"
-                            bg={progressBoxBg}
-                          >
-                            <Stack spacing={3}>
-                              <Progress
-                                value={eventPct}
-                                size="sm"
-                                borderRadius="full"
-                                colorScheme={colors[i].split(".")[0]}
-                              />
-                              <Flex justify="space-between">
-                                <Text fontSize="sm" color="gray.500">
-                                  {eventPct}% of total events
-                                </Text>
-                                <Text fontSize="sm" color="gray.500">
-                                  ~{hrsPerDay} hrs/day
-                                </Text>
+                        return (
+                          <Box key={i}>
+                            <Flex justify="space-between" align="center" mb={2}>
+                              <Flex align="center">
+                                <Box
+                                  boxSize={3}
+                                  rounded="full"
+                                  bg={colors[i]}
+                                  mr={2}
+                                />
+                                <Text fontWeight="medium">{cat.name}</Text>
                               </Flex>
-                            </Stack>
+                              <Text fontWeight="bold">
+                                {events || 0} events
+                              </Text>
+                            </Flex>
+                            <Box
+                              borderWidth="1px"
+                              p={4}
+                              borderRadius="md"
+                              bg={progressBoxBg}
+                            >
+                              <Stack spacing={3}>
+                                <Progress
+                                  value={eventPct}
+                                  size="sm"
+                                  borderRadius="full"
+                                  colorScheme={colors[i].split(".")[0]}
+                                />
+                                <Flex justify="space-between">
+                                  <Text fontSize="sm" color="gray.500">
+                                    {eventPct}% of total events
+                                  </Text>
+                                  <Text fontSize="sm" color="gray.500">
+                                    ~{hrsPerDay} hrs/day
+                                  </Text>
+                                </Flex>
+                              </Stack>
+                            </Box>
                           </Box>
-                        </Box>
-                      );
-                    })}
+                        );
+                      })}
                   </Stack>
                 </Box>
               </Box>

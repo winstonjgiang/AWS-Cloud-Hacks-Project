@@ -1,5 +1,6 @@
 // src/utils/userMap.js
 export function userMap(auth, googleUser = null) {
+  //Prep user for DynamoDB
   if (
     auth.isAuthenticated &&
     auth.user &&
@@ -20,6 +21,7 @@ export function userMap(auth, googleUser = null) {
 }
 
 export function eventMap(googleId, googleEvent = null) {
+  //Prep event for DynamoDB
   if (googleId && googleEvent) {
     return {
       userId: googleId,

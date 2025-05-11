@@ -5,6 +5,7 @@ import { dynamo } from '../configs/dynamo';
 const client = DynamoDBDocumentClient.from(dynamo);
 
 export async function createUser(user) {
+  //Create user and prep to be sent to DynamoDB
   const command = new PutCommand({
     TableName: 'Users',
     Item: {
@@ -15,7 +16,6 @@ export async function createUser(user) {
       googleId:  user.googleId
     },
   });
-
   try {
     await client.send(command);
   } catch (error) {
@@ -25,6 +25,7 @@ export async function createUser(user) {
 }
 
 export async function getUser(userId) {
+  //Get user from DynamoDB
   const command = new GetCommand({
     TableName: 'Users',
     Key: { userId },

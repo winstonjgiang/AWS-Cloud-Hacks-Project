@@ -9,10 +9,12 @@ import VisualizationSection from "./user_dashboard_components/VisualizationSecti
 import { FaBook, FaRunning, FaHeart, FaClock } from "react-icons/fa";
 
 export default function UserDashboard({ categoryData, summary, recurringEvents, aiTips }) {
-  // Build stats array exactly as before
+
   const stats = React.useMemo(() => {
+
     if (!categoryData) return null;
     const total = categoryData.reduce((sum, item) => sum + Number(item.value[0]), 0);
+    
     return [
       {
         title: "Academic Time",

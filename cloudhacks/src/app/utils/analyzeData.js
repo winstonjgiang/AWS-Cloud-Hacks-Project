@@ -25,7 +25,6 @@ export const analyzeData = async (
       events: eventsData,
     });
 
-    // make sure we got something back
     if (
       !analysis ||
       typeof analysis !== "object" ||

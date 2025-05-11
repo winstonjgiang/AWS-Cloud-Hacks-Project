@@ -13,13 +13,12 @@ import DashboardMetrics from './DashboardMetrics'
 
 export default function LoginForm({ auth, setPage }) {
   const bg = useColorModeValue('gray.50', 'gray.800')
-  const cardBg = useColorModeValue('white', 'gray.700')
   const headingColor = useColorModeValue('gray.800', 'white')
+
   const handleOnClick = () => {
     setPage("dashboard");
     auth.signinRedirect();
   }
-
 
   return (
     <Flex
@@ -35,7 +34,7 @@ export default function LoginForm({ auth, setPage }) {
         maxW="100%"
         w="full"
       >
-        {/* Left panel */}
+        {/*Left panel*/}
         <Box flex="1" display="flex" alignItems="center" p={{ base: 6, md: 10 }} w={{ base: '100%', md: '40%' }} maxW={{ md: '45%' }}>
           <Stack spacing={4}>
             <Heading as="h1" size="2xl" color={headingColor} lineHeight="1.2">
@@ -75,7 +74,7 @@ export default function LoginForm({ auth, setPage }) {
           w={{ base: '100%', md: '55%' }}
           maxW={{ md: '55%' }}
         >
-          <DashboardMetrics />
+          <DashboardMetrics /> {/*Right Side Dashboard Component*/}
         </Box>
       </Flex>
     </Flex>
