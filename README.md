@@ -31,8 +31,8 @@ Rate My Calendar is an intelligent calendar analytics tool that helps users unde
 ### Installation
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/AWS-Cloud-Hacks-Project.git
-cd AWS-Cloud-Hacks-Project
+git clone https://github.com/yourusername/RateMyCalendar.git
+cd RateMyCalendar
 ```
 
 2. Install dependencies
