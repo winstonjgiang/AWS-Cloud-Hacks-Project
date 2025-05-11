@@ -25,7 +25,6 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
 export default function CategoryPieChart({ data }) {
     return (
         <div className="mt-8 w-full max-w-2xl mx-auto">
-            <h2 className="text-xl font-semibold mb-4">Your Week, Visualized</h2>
             <div className="h-[400px]">
                 <ResponsiveContainer width="100%" height="100%">
                     <PieChart>

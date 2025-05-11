@@ -10,10 +10,13 @@ import axios from "axios";
 import LoginForm from "./components/LoginForm";
 import UserDashboard from "./components/UserDashboard";
 import { analyzeData } from "../utils/analyzeData";
+import { Card } from "@chakra-ui/react";
+
 export default function Dashboard() {
   const auth = useAuth();
   const [categoryData, setCategoryData] = useState(null);
   const [googleUser, setGoogleUser] = useState(null);
+  const [summary, setSummary] = useState(null);
 
   const fetchEvents = async () => {
     try {
@@ -28,7 +31,7 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    console.log(categoryData);
+    console.log("CATEGORY DATA:", categoryData);
   }, [categoryData]);
 
   useEffect(() => {
@@ -72,7 +75,7 @@ export default function Dashboard() {
           const results = await Promise.all(post_events);
           console.log("All events processed:", results);
         }
-        await analyzeData(fetchedEvents, googleUser, setCategoryData);
+        await analyzeData(fetchedEvents, googleUser, setCategoryData, setSummary);
       } catch (error) {
         console.error("Failed to initialize dashboard:", error);
       }
@@ -87,14 +90,14 @@ export default function Dashboard() {
 
       <div>
         {auth.isAuthenticated ? (
-          <UserDashboard categoryData={categoryData} />
+          <UserDashboard categoryData={categoryData} summary={summary} />
         ) : (
           <LoginForm auth={auth} />
         )}
 
-        <h1>googleID: {googleUser?.googleId}</h1>
+        {/* <h1>googleID: {googleUser?.googleId}</h1> */}
 
-        <h1>{tokenManager.getToken()}</h1>
+        {/* <h1>{tokenManager.getToken()}</h1> */}
       </div>
     </>
   );
