@@ -2,7 +2,7 @@ import {
   BedrockRuntimeClient,
   InvokeModelCommand,
 } from "@aws-sdk/client-bedrock-runtime";
-import { getAllEvents } from "@/app/services/dynamo";
+import { getUserEvents } from "@/app/services/dynamo";
 
 const client = new BedrockRuntimeClient({
   region: process.env.AWS_REGION || "us-west-2",
@@ -16,38 +16,41 @@ const modelID = "anthropic.claude-3-5-sonnet-20241022-v2:0";
 
 const prompt = `
 You are a helpful AI assistant that ONLY returns valid JSON responses.
-You will be given a JSON object containing events grouped by userId.
-For each userId, classify their events into the following categories, which represents how many individual events occurred in each category:
+You will be given a JSON object containing events for a single user.
+Classify their events into the following categories, which represents how many individual events occurred in each category:
 - Academic
 - Exercise
 - Personal/Other
 
 You MUST return ONLY a JSON object with the following format, with no additional text or explanation:
 {
-  "userId1": {
+  "userId": {
     "Academic": 0,
     "Exercise": 0,
     "Personal/Other": 0,
     "summary": "A 1-2 sentence analysis of their event distribution, highlighting notable patterns or comparisons. For example: 'This week you exercised 70% more than you went to class!' or 'Your work and social activities were perfectly balanced this week.'"
-  },
-  "userId2": {
-    "Academic": 0,
-    "Exercise": 0,
-    "Personal/Other": 0,
-    "summary": "A 1-2 sentence analysis of their event distribution, highlighting notable patterns or comparisons."
   }
-  // ... one object per userId
 }
 
-Make the summaries insightful and specific to each user's event distribution, and have a hint of a fun tone. 
+Make the summary insightful and specific to the user's event distribution, and have a hint of a fun tone. 
 Compare categories, note significant differences, or highlight interesting patterns, preferably with percentages for readability.
 `;
 
 export async function POST(request) {
   try {
-    // Get events grouped by user from DynamoDB
-    const eventsByUser = await getAllEvents();
-    console.log("Fetched events grouped by user:", eventsByUser);
+    const body = await request.json();
+    const { userId, events } = body;
+
+    if (!userId || !events) {
+      return Response.json(
+        { error: "userId and events are required" },
+        { status: 400 }
+      );
+    }
+
+    // Get events for the specific user
+    const userEvents = await getUserEvents(userId);
+    console.log("Fetched events for user:", userEvents);
 
     const input = {
       modelId: modelID,
@@ -66,8 +69,8 @@ export async function POST(request) {
             content: [
               {
                 type: "text",
-                text: `${prompt}\n\nHere are the events grouped by user:\n${JSON.stringify(
-                  eventsByUser,
+                text: `${prompt}\n\nHere are the events for the user:\n${JSON.stringify(
+                  { [userId]: userEvents },
                   null,
                   2
                 )}`,
