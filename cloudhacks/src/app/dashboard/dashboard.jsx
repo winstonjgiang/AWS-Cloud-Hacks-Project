@@ -1,4 +1,13 @@
-"use client";
+'use client';
+
+import { useAuth } from 'react-oidc-context';
+import { useEffect, useState } from 'react';
+import { userMap } from '../utils/userMap';
+import loadGapiClient from '../utils/gapi';
+import axios from 'axios';
+import { testBedrockAPI } from '../services/bedrock';
+import CategoryPieChart from './components/CategoryPieChart';
+
 
 import { useAuth } from "react-oidc-context";
 import { useEffect, useState } from "react";
@@ -11,6 +20,20 @@ import LoginForm from "./components/LoginForm";
 import UserDashboard from "./components/UserDashboard";
 export default function Dashboard() {
   const auth = useAuth();
+
+  const [categoryData, setCategoryData] = useState(null);
+
+	const analyzeData = async () => {
+		const analysis = await testBedrockAPI(result.events);
+		if (analysis && Object.keys(analysis).length > 0) {
+			const userId = Object.keys(analysis)[0];
+			const userData = analysis[userId];
+			const chartData = Object.entries(userData)
+				.filter(([key]) => key !== 'summary')
+				.map(([name, value]) => ({ name, value }));
+			setCategoryData(chartData);
+		}
+	};
   const fetchEvents = async () => {
     try {
       const googleResponse = await loadGapiClient(
@@ -58,14 +81,27 @@ export default function Dashboard() {
   }, [auth]);
 
   return (
-    <>
-      <ChakraNav />
-      <div>
-        {auth.isAuthenticated ? <UserDashboard /> : <LoginForm auth={auth} />}
-        <h1>{tokenManager.getToken()}</h1>
-        {/* You can render events here if needed */}
-      </div>
-    </>
+		<>
+			<ChakraNav />
+
+			<div>
+				{auth.isAuthenticated ? (
+					<UserDashboard />
+				) : (
+					<LoginForm auth={auth} />
+				)}
+
+				<h1>{tokenManager.getToken()}</h1>
+
+				{categoryData ? (
+					<CategoryPieChart data={categoryData} />
+				) : (
+					<div>Loading category data...</div>
+				)}
+
+				{/* You can render events here if needed */}
+			</div>
+		</>
   );
 }
 
