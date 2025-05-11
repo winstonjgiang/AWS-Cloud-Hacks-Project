@@ -5,7 +5,8 @@ export const analyzeData = async (
   user,
   setCategoryData,
   setSummary,
-  setRecurringEvents
+  setRecurringEvents,
+  setAiTips
 ) => {
   try {
     if (!user?.googleId) {
@@ -54,6 +55,9 @@ export const analyzeData = async (
 
     // 3) recurring events
     setRecurringEvents(userData.Recurring_Events || []);
+
+    // 4) ai tips
+    setAiTips(userData.Tips);
   } catch (error) {
     console.error("Error analyzing data:", error);
   }
