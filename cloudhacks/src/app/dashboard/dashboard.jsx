@@ -4,10 +4,11 @@ import { useAuth } from "react-oidc-context";
 import { useEffect, useState } from "react";
 import { userMap, eventMap } from "../utils/userMap";
 import { tokenManager } from "../utils/tokenManager";
+import ChakraNav from "./ui/ChakraNav";
 import loadGapiClient from "../utils/gapi";
 import axios from "axios";
-import LoginForm from "../LoginForm";
-
+import LoginForm from "./components/LoginForm";
+import UserDashboard from "./components/UserDashboard";
 export default function Dashboard() {
   const auth = useAuth();
   const fetchEvents = async () => {
@@ -37,8 +38,11 @@ export default function Dashboard() {
           const authenticated = userMap(auth, googleResponse.googleUser);
           await axios.post("/api/user", authenticated);
 
-          const post_events = events.map(event => {
-            const event_promise = eventMap(googleResponse.googleUser.googleId, event);
+          const post_events = events.map((event) => {
+            const event_promise = eventMap(
+              googleResponse.googleUser.googleId,
+              event
+            );
             return axios.post("/api/events", event_promise);
           });
 
@@ -54,11 +58,14 @@ export default function Dashboard() {
   }, [auth]);
 
   return (
-    <div>
-      {auth.isAuthenticated ? "Authenticated" : "Not authenticated"}
-      <LoginForm auth={auth} />
-      <h1>{tokenManager.getToken()}</h1>
-      {/* You can render events here if needed */}
-    </div>
+    <>
+      <ChakraNav />
+      <div>
+        {auth.isAuthenticated ? <UserDashboard /> : <LoginForm auth={auth} />}
+        <h1>{tokenManager.getToken()}</h1>
+        {/* You can render events here if needed */}
+      </div>
+    </>
   );
 }
+
