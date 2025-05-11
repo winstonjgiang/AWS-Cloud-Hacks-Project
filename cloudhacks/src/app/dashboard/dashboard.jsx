@@ -7,8 +7,8 @@ import { tokenManager } from "../utils/tokenManager";
 import ChakraNav from "./ui/ChakraNav";
 import loadGapiClient from "../utils/gapi";
 import axios from "axios";
-import LoginForm from "../LoginForm";
-
+import LoginForm from "./components/LoginForm";
+import UserDashboard from "./components/UserDashboard";
 export default function Dashboard() {
   const auth = useAuth();
   const fetchEvents = async () => {
@@ -61,8 +61,7 @@ export default function Dashboard() {
     <>
       <ChakraNav />
       <div>
-        {auth.isAuthenticated ? "Authenticated" : "Not authenticated"}
-        <LoginForm auth={auth} />
+        {auth.isAuthenticated ? <UserDashboard /> : <LoginForm auth={auth} />}
         <h1>{tokenManager.getToken()}</h1>
         {/* You can render events here if needed */}
       </div>
