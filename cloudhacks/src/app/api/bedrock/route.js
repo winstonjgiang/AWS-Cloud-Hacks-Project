@@ -35,7 +35,8 @@ You MUST return ONLY a JSON object with the following format, with no additional
       "Exercise": [0.0, 0.0],
       "Personal": [0.0, 0.0],
     },
-    "summary": "A 1-2 sentence analysis of their time distribution, highlighting notable patterns or comparisons. For example: 'You spent 3.5 hours exercising this week, 70% more than your academic time!' or 'Your work and social activities were perfectly balanced, each taking about 10 hours.'"
+    "summary": "A 5-6 sentence analysis of their time distribution, highlighting notable patterns or comparisons. For example: 'You spent 3.5 hours exercising this week, 70% more than your academic time!' or 'Your work and social activities were perfectly balanced, each taking about 10 hours. 
+    Add an emoji that best describes the user's week"
     "Recurring_Events": {
       "Academic": {
         "Event_Name": [0.0, 0.0],

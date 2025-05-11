@@ -18,7 +18,7 @@ import {
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import Logo from "./Logo";
 
-export default function ChakraNav({ auth, page, setPage }) {
+export default function ChakraNav({ auth, page, setPage, isAuthenticated, setIsAuthenticated }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const bgColor    = useColorModeValue("white", "gray.800");
   const activeBg   = useColorModeValue("gray.200", "gray.700");
@@ -27,7 +27,7 @@ export default function ChakraNav({ auth, page, setPage }) {
   const navItems = [
     { label: "Home",      action: () => setPage("home"),      key: "home" },
   ];
-  if (auth.isAuthenticated) {
+  if (auth.isAuthenticated && isAuthenticated) {
     navItems.push(
       { label: "Dashboard", action: () => setPage("dashboard"), key: "dashboard" }
     );
@@ -68,7 +68,7 @@ export default function ChakraNav({ auth, page, setPage }) {
 
         {/* User menu (when signed in) */}
         <Flex alignItems="center">
-          {auth.isAuthenticated && (
+          {(auth.isAuthenticated && isAuthenticated) && (
             <Menu>
               <MenuButton as={Button} rounded="full" variant="link" cursor="pointer" minW={0}>
                 <Avatar size="sm" src="https://bit.ly/broken-link" />
@@ -78,6 +78,7 @@ export default function ChakraNav({ auth, page, setPage }) {
                   onClick={() => {
                     console.log("Signing out");
                     setPage("home");
+                    setIsAuthenticated(false);
                   }}
                 >
                   Logout

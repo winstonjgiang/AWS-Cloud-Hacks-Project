@@ -9,7 +9,6 @@ import axios from "axios";
 import LoginForm from "./components/LoginForm";
 import UserDashboard from "./components/UserDashboard";
 import { analyzeData } from "../utils/analyzeData";
-import { Card } from "@chakra-ui/react";
 
 export default function Dashboard() {
   const auth = useAuth();
@@ -18,6 +17,7 @@ export default function Dashboard() {
   const [recurringEvents, setRecurringEvents] = useState(null);
   const [summary, setSummary] = useState(null);
   const [page, setPage] = useState("home");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const fetchEvents = async () => {
     try {
@@ -30,14 +30,6 @@ export default function Dashboard() {
       return null;
     }
   };
-
-  useEffect(() => {
-    console.log("CATEGORY DATA:", categoryData);
-  }, [categoryData]);
-
-  useEffect(() => {
-    console.log("RECURRING EVENTS:", recurringEvents);
-  }, [recurringEvents]);
 
   useEffect(() => {
     const initializeDashboard = async () => {
@@ -53,6 +45,14 @@ export default function Dashboard() {
         setGoogleUser(googleUser);
 
         const authenticated = userMap(auth, googleResponse.googleUser);
+        setPage("dashboard");
+
+        if (!authenticated) {
+          setIsAuthenticated(false);
+        } else {
+          setIsAuthenticated(true);
+        }
+
         let existingUser = false;
         try {
           existingUser = await axios.get("/api/user", {
@@ -68,6 +68,7 @@ export default function Dashboard() {
           await axios.post("/api/user", authenticated);
         }
 
+
         if (!existingUser.data.exists) {
           const post_events = fetchedEvents.map((event) => {
             const event_promise = eventMap(
@@ -80,7 +81,6 @@ export default function Dashboard() {
           console.log("All events processed:", results);
         }
         await analyzeData(fetchedEvents, googleUser, setCategoryData, setSummary, setRecurringEvents);
-        setPage("dashboard");
 
       } catch (error) {
         console.error("Failed to initialize dashboard:", error);
@@ -92,7 +92,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <ChakraNav auth={auth} page={page} setPage={setPage} />
+      <ChakraNav auth={auth} page={page} setPage={setPage} isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />
 
       <div>
         {page === "home" && <LoginForm auth={auth} page={page} setPage={setPage} />}
