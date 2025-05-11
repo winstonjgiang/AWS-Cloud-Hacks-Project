@@ -16,6 +16,7 @@ export default function Dashboard() {
   const auth = useAuth();
   const [categoryData, setCategoryData] = useState(null);
   const [events, setEvents] = useState([]);
+  const [googleUser, setGoogleUser] = useState(null);
 
   const analyzeData = async (eventsData) => {
     try {
@@ -57,6 +58,7 @@ export default function Dashboard() {
 
         const { events: fetchedEvents } = googleResponse;
         setEvents(fetchedEvents);
+        setGoogleUser(googleResponse.googleUser);
         console.log("Google Response:", googleResponse.googleUser);
 
         const authenticated = userMap(auth, googleResponse.googleUser);
@@ -93,6 +95,8 @@ export default function Dashboard() {
         ) : (
           <LoginForm auth={auth} />
         )}
+
+        <h1>googleID: {googleUser?.googleId}</h1>
 
         <h1>{tokenManager.getToken()}</h1>
 
