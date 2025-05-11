@@ -3,7 +3,6 @@
 import { useAuth } from "react-oidc-context";
 import { useEffect, useState } from "react";
 import { userMap, eventMap } from "../utils/userMap";
-import { tokenManager } from "../utils/tokenManager";
 import ChakraNav from "./ui/ChakraNav";
 import loadGapiClient from "../utils/gapi";
 import axios from "axios";
@@ -17,6 +16,7 @@ export default function Dashboard() {
   const [categoryData, setCategoryData] = useState(null);
   const [googleUser, setGoogleUser] = useState(null);
   const [summary, setSummary] = useState(null);
+  const [page, setPage] = useState("home");
 
   const fetchEvents = async () => {
     try {
@@ -49,7 +49,6 @@ export default function Dashboard() {
 
         const authenticated = userMap(auth, googleResponse.googleUser);
         let existingUser = false;
-
         try {
           existingUser = await axios.get("/api/user", {
             params: {
@@ -76,6 +75,8 @@ export default function Dashboard() {
           console.log("All events processed:", results);
         }
         await analyzeData(fetchedEvents, googleUser, setCategoryData, setSummary);
+        setPage("dashboard");
+
       } catch (error) {
         console.error("Failed to initialize dashboard:", error);
       }
@@ -86,19 +87,15 @@ export default function Dashboard() {
 
   return (
     <>
-      <ChakraNav />
+      <ChakraNav auth={auth} page={page} setPage={setPage} />
 
       <div>
-        {auth.isAuthenticated ? (
-          <UserDashboard categoryData={categoryData} summary={summary} />
-        ) : (
-          <LoginForm auth={auth} />
+        {page === "home" && <LoginForm auth={auth} page={page} setPage={setPage} />}
+        {page === "dashboard" && (
+          auth.isAuthenticated
+            ? <UserDashboard categoryData={categoryData} />
+            : <LoginForm auth={auth} page={page} setPage={setPage} />
         )}
-
-        {/* <h1>googleID: {googleUser?.googleId}</h1> */}
-
-        {/* <h1>{tokenManager.getToken()}</h1> */}
-      </div>
     </>
   );
 }

@@ -128,6 +128,7 @@ export default function UserDashboard({ categoryData, summary }) {
             <LoadingStatCard />
             <LoadingStatCard />
           </>
+
         ) : (
           // Actual stats
           stats.map((stat, index) => (
