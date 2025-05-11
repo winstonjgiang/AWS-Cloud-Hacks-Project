@@ -18,8 +18,9 @@ import {
     SkeletonText,
   } from "@chakra-ui/react";
   import CategoryPieChart from "./CategoryPieChart";
+  import AdditionalDetailPanel from "./AdditionalDetailPanel";
   
-  export default function VisualizationSection({ categoryData, isLoading }) {
+  export default function VisualizationSection({ categoryData, isLoading, recurringEvents }) {
     const cardBg = useColorModeValue("white", "gray.700");
     const borderColor = useColorModeValue("gray.200", "gray.600");
     const titleColor = "#232F3E";
@@ -119,7 +120,7 @@ import {
                 </Box>
               </TabPanel>
               <TabPanel p={0}>
-                <Text>Additional statistics will go here...</Text>
+                <AdditionalDetailPanel categoryData={categoryData} recurringEvents={recurringEvents} />
               </TabPanel>
             </TabPanels>
           </Tabs>

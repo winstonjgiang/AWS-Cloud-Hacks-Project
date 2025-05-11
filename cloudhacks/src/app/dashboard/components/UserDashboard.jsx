@@ -8,7 +8,7 @@ import SummarySection from "./user_dashboard_components/SummarySection";
 import VisualizationSection from "./user_dashboard_components/VisualizationSection";
 import { FaBook, FaRunning, FaHeart, FaClock } from "react-icons/fa";
 
-export default function UserDashboard({ categoryData, summary }) {
+export default function UserDashboard({ categoryData, summary, recurringEvents }) {
   // Build stats array exactly as before
   const stats = React.useMemo(() => {
     if (!categoryData) return null;
@@ -52,7 +52,7 @@ export default function UserDashboard({ categoryData, summary }) {
       <DashboardHeader />
       <StatsGrid stats={stats} isLoading={isLoading} />
       <SummarySection summary={summary} isLoading={isLoading} />
-      <VisualizationSection categoryData={categoryData} isLoading={isLoading} />
+      <VisualizationSection categoryData={categoryData} isLoading={isLoading} recurringEvents={recurringEvents} />
     </Box>
   );
 }
