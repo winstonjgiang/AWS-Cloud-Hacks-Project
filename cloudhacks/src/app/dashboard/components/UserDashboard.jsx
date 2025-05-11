@@ -13,6 +13,11 @@ import {
   useColorModeValue,
   Skeleton,
   SkeletonText,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
 } from "@chakra-ui/react";
 import { FaBook, FaRunning, FaHeart, FaClock } from "react-icons/fa";
 import CategoryPieChart from "./CategoryPieChart";
@@ -243,65 +248,83 @@ export default function UserDashboard({ categoryData, summary }) {
               </Flex>
             </Box>
           ) : (
-            <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={8}>
-              {/* Left side - Pie Chart */}
-              <Box>
-                <CategoryPieChart data={categoryData} />
-              </Box>
+            <Tabs variant="enclosed" colorScheme="orange">
+              <TabList mb='4'>
+                <Tab>Overview</Tab>
+                <Tab>Detailed Stats</Tab>
+              </TabList>
 
-              {/* Right side - Detailed Statistics */}
-              <Box>
-                <Stack spacing={6}>
-                  {categoryData.map((category, index) => {
-                    const [hours, eventCount] = category.value;
-                    // Calculate total events across all categories
-                    const totalEvents = categoryData.reduce((sum, cat) => sum + Number(cat.value[1]), 0);
-                    // Calculate event frequency percentage
-                    const eventPercentage = Math.round((eventCount / totalEvents) * 100);
-                    const hoursPerDay = (hours / 7).toFixed(1);
+              <TabPanels>
+                {/* First Tab - Current Visualization */}
+                <TabPanel p={0}>
+                  <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={8}>
+                    {/* Left side - Pie Chart */}
+                    <Box>
+                      <CategoryPieChart data={categoryData} />
+                    </Box>
 
-                    return (
-                      <Box key={index}>
-                        <Flex justify="space-between" align="center" mb={2}>
-                          <Flex align="center">
-                            <Box
-                              boxSize={3}
-                              rounded="full"
-                              bg={['blue.400', 'green.400', 'yellow.400'][index]}
-                              mr={2}
-                            />
-                            <Text fontWeight="medium">{category.name}</Text>
-                          </Flex>
-                          <Stack align="flex-end">
-                            <Text fontWeight="bold">
-                              {eventCount} events
-                            </Text>
-                          </Stack>
-                        </Flex>
-                        <Box borderWidth="1px" p={4} borderRadius="md" bg={useColorModeValue("gray.50", "gray.700")}>
-                          <Stack spacing={3}>
-                            <Progress
-                              value={eventPercentage}
-                              size="sm"
-                              colorScheme={['blue', 'green', 'yellow'][index]}
-                              borderRadius="full"
-                            />
-                            <Flex justify="space-between">
-                              <Text fontSize="sm" color="gray.500">
-                                {eventPercentage}% of total events
-                              </Text>
-                              <Text fontSize="sm" color="gray.500">
-                                ~{hoursPerDay} hours/day
-                              </Text>
-                            </Flex>
-                          </Stack>
-                        </Box>
-                      </Box>
-                    );
-                  })}
-                </Stack>
-              </Box>
-            </Grid>
+                    {/* Right side - Detailed Statistics */}
+                    <Box>
+                      <Stack spacing={6}>
+                        {categoryData.map((category, index) => {
+                          const [hours, eventCount] = category.value;
+                          const totalEvents = categoryData.reduce((sum, cat) => sum + Number(cat.value[1]), 0);
+                          const eventPercentage = Math.round((eventCount / totalEvents) * 100);
+                          const hoursPerDay = (hours / 7).toFixed(1);
+
+                          return (
+                            <Box key={index}>
+                              <Flex justify="space-between" align="center" mb={2}>
+                                <Flex align="center">
+                                  <Box
+                                    boxSize={3}
+                                    rounded="full"
+                                    bg={['blue.400', 'green.400', 'yellow.400'][index]}
+                                    mr={2}
+                                  />
+                                  <Text fontWeight="medium">{category.name}</Text>
+                                </Flex>
+                                <Stack align="flex-end">
+                                  <Text fontWeight="bold">
+                                    {eventCount} events
+                                  </Text>
+                                </Stack>
+                              </Flex>
+                              <Box borderWidth="1px" p={4} borderRadius="md" bg={useColorModeValue("gray.50", "gray.700")}>
+                                <Stack spacing={3}>
+                                  <Progress
+                                    value={eventPercentage}
+                                    size="sm"
+                                    colorScheme={['blue', 'green', 'yellow'][index]}
+                                    borderRadius="full"
+                                  />
+                                  <Flex justify="space-between">
+                                    <Text fontSize="sm" color="gray.500">
+                                      {eventPercentage}% of total events
+                                    </Text>
+                                    <Text fontSize="sm" color="gray.500">
+                                      ~{hoursPerDay} hours/day
+                                    </Text>
+                                  </Flex>
+                                </Stack>
+                              </Box>
+                            </Box>
+                          );
+                        })}
+                      </Stack>
+                    </Box>
+                  </Grid>
+                </TabPanel>
+
+                {/* Second Tab - Additional Statistics */}
+                <TabPanel p={0}>
+                  <Box>
+                    {/* You can add your additional statistics here */}
+                    <Text>Additional statistics will go here...</Text>
+                  </Box>
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
           )}
         </CardBody>
       </Card>
