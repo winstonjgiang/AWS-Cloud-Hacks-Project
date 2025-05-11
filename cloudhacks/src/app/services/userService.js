@@ -1,5 +1,5 @@
 // src/app/services/userService.js
-import { PutCommand, DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
+import { PutCommand, DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
 import { dynamo } from '../configs/dynamo';
 
 const client = DynamoDBDocumentClient.from(dynamo);
@@ -21,5 +21,20 @@ export async function createUser(user) {
   } catch (error) {
     console.error('Error creating user:', error);
     throw error;
+  }
+}
+
+export async function getUser(userId) {
+  const command = new GetCommand({
+    TableName: 'Users',
+    Key: { userId },
+  });
+
+  try {
+    const response = await client.send(command);
+    console.log('Fetching user:', userId);
+    return response.Item;
+  } catch (error) {
+    console.error("Error fetching user:", error);
   }
 }

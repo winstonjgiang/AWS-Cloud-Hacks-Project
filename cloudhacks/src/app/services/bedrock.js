@@ -17,6 +17,7 @@ export async function invokeBedrockAPI({ userId, events }) {
     }
 
     const result = await response.json();
+
     console.log("Bedrock API response:", result);
     return result;
   } catch (error) {

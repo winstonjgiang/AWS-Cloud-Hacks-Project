@@ -9,7 +9,6 @@ async function loadGapiClient(clientId) {
 
   await new Promise((resolve, reject) => {
     gapi.load('client:auth2', () => {
-      console.log('gapi loaded');
       resolve();
     });
   });
@@ -27,6 +26,7 @@ async function loadGapiClient(clientId) {
   // Get the current user
   const googleUser = auth.currentUser.get();
   const googleUserInfo = googleUser.getBasicProfile();
+  
   const userInfo = {
     googleId: googleUserInfo.getId(),
     email: googleUserInfo.getEmail(),
@@ -40,8 +40,6 @@ async function loadGapiClient(clientId) {
   const accessToken = authResponse.access_token;
 
   if (auth.isSignedIn.get()) {
-    console.log('user is signed in');
-    console.log('Access Token:', accessToken);
 
     // You can now use this access token for API calls
     const response = await gapi.client.calendar.events.list({
@@ -52,7 +50,6 @@ async function loadGapiClient(clientId) {
       timeMax: today(),
     });
 
-    console.log('Google Access Token:', accessToken);
 
 
     return {
@@ -61,7 +58,6 @@ async function loadGapiClient(clientId) {
       accessToken: accessToken
     };
   } else {
-    console.log('user is not signed in');
     return null;
   }
 }

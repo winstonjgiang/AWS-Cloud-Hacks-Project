@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useAuth } from "react-oidc-context";
 import { useEffect, useState } from "react";
@@ -9,14 +9,10 @@ import loadGapiClient from "../utils/gapi";
 import axios from "axios";
 import LoginForm from "./components/LoginForm";
 import UserDashboard from "./components/UserDashboard";
-import { invokeBedrockAPI } from "../services/bedrock";
-import CategoryPieChart from "./components/CategoryPieChart";
-
+import { analyzeData } from "../utils/analyzeData";
 export default function Dashboard() {
   const auth = useAuth();
   const [categoryData, setCategoryData] = useState(null);
-  const [events, setEvents] = useState([]);
-  const [googleUser, setGoogleUser] = useState(null);
 
   const analyzeData = async (eventsData, user) => {
     try {
@@ -44,6 +40,7 @@ export default function Dashboard() {
     }
   };
 
+
   const fetchEvents = async () => {
     try {
       const googleResponse = await loadGapiClient(
@@ -66,27 +63,40 @@ export default function Dashboard() {
         const googleResponse = await fetchEvents();
         if (!googleResponse) return;
 
+
         const { googleUser, events: fetchedEvents } = googleResponse;
-        setGoogleUser(googleUser);
-        setEvents(fetchedEvents);
-        console.log("Google Response:", googleResponse.googleUser);
 
         const authenticated = userMap(auth, googleResponse.googleUser);
-        await axios.post("/api/user", authenticated);
+        let existingUser = false;
 
-        const post_events = fetchedEvents.map((event) => {
-          const event_promise = eventMap(
-            googleResponse.googleUser.googleId,
-            event
-          );
-          return axios.post("/api/events", event_promise);
-        });
+        try {
+          existingUser = await axios.get("/api/user", {
+            params: {
+              userId: authenticated.userId,
+            },
+          });
+        } catch (error) {
+          console.error("Failed to fetch user:", error);
+        }
 
-        const results = await Promise.all(post_events);
-        console.log("All events processed:", results);
+        if (!existingUser.data.exists) {
+          await axios.post("/api/user", authenticated);
+        }
 
-        // Analyze the events data after processing
+        if (!existingUser.data.exists) {
+          const post_events = fetchedEvents.map((event) => {
+            const event_promise = eventMap(
+              googleResponse.googleUser.googleId,
+              event
+            );
+            return axios.post("/api/events", event_promise);
+          });
+          const results = await Promise.all(post_events);
+          console.log("All events processed:", results);
         await analyzeData(fetchedEvents, googleUser);
+          
+        }
+
       } catch (error) {
         console.error("Failed to initialize dashboard:", error);
       }
@@ -101,22 +111,15 @@ export default function Dashboard() {
 
       <div>
         {auth.isAuthenticated ? (
-          <UserDashboard />
+          <UserDashboard categoryData={categoryData} />
         ) : (
-          <LoginForm auth={auth} />
+          <LoginForm auth={auth}  />
         )}
 
         <h1>googleID: {googleUser?.googleId}</h1>
 
         <h1>{tokenManager.getToken()}</h1>
-
-        {categoryData ? (
-          <CategoryPieChart data={categoryData} />
-        ) : (
-          <div>Loading category data...</div>
-        )}
       </div>
     </>
   );
 }
-
