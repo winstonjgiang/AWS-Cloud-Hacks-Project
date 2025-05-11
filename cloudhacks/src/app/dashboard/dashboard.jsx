@@ -93,9 +93,10 @@ export default function Dashboard() {
         {page === "home" && <LoginForm auth={auth} page={page} setPage={setPage} />}
         {page === "dashboard" && (
           auth.isAuthenticated
-            ? <UserDashboard categoryData={categoryData} />
+            ? <UserDashboard categoryData={categoryData} summary={summary} />
             : <LoginForm auth={auth} page={page} setPage={setPage} />
         )}
+      </div>
     </>
   );
 }
