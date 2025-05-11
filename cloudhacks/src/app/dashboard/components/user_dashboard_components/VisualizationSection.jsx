@@ -22,7 +22,6 @@ import AdditionalDetailPanel from "./AdditionalDetailPanel";
 import TipsPanel from "./Tips";
 
 export default function VisualizationSection({ categoryData, isLoading, recurringEvents, aiTips }) {
-  // Move all useColorModeValue hooks to the top
   const cardBg = useColorModeValue("white", "gray.700");
   const borderColor = useColorModeValue("gray.200", "gray.600");
   const titleColor = "#232F3E";
@@ -30,7 +29,10 @@ export default function VisualizationSection({ categoryData, isLoading, recurrin
   const boxBg = useColorModeValue("gray.50", "gray.700");
   const progressBoxBg = useColorModeValue("gray.50", "gray.700");
 
-  if (isLoading) {
+  // Add data validation check
+  const isDataValid = categoryData && Array.isArray(categoryData) && categoryData.length > 0;
+
+  if (isLoading || !isDataValid) {
     return (
       <Card bg={cardBg} borderColor={borderColor} borderWidth="1px" borderRadius="lg">
         <CardBody>
@@ -56,6 +58,25 @@ export default function VisualizationSection({ categoryData, isLoading, recurrin
     );
   }
 
+  // Safe calculation functions
+  const calculateEventPercentage = (events, totalEvents) => {
+    if (!totalEvents || isNaN(totalEvents) || totalEvents === 0) return 0;
+    return Math.round((events / totalEvents) * 100);
+  };
+
+  const calculateHoursPerDay = (hours) => {
+    if (!hours || isNaN(hours)) return 0;
+    return (hours / 7).toFixed(1);
+  };
+
+  const getTotalEvents = (data) => {
+    if (!Array.isArray(data)) return 0;
+    return data.reduce((sum, cat) => {
+      const events = Array.isArray(cat.value) ? Number(cat.value[1]) : 0;
+      return sum + (isNaN(events) ? 0 : events);
+    }, 0);
+  };
+
   return (
     <Card bg={cardBg} borderColor={borderColor} borderWidth="1px" borderRadius="lg">
       <CardBody>
@@ -75,16 +96,17 @@ export default function VisualizationSection({ categoryData, isLoading, recurrin
             <TabPanel p={0}>
               <Box display={{ base: "block", md: "flex" }} gap={8}>
                 <Box flex="1">
-                  <CategoryPieChart data={categoryData} />
+                  {isDataValid && <CategoryPieChart data={categoryData} />}
                 </Box>
                 <Box flex="1">
                   <Stack spacing={6}>
-                    {categoryData.map((cat, i) => {
-                      const [hours, events] = cat.value;
-                      const totalEvents = categoryData.reduce((s, c) => s + Number(c.value[1]), 0);
-                      const eventPct = Math.round((events / totalEvents) * 100);
-                      const hrsPerDay = (hours / 7).toFixed(1);
+                    {isDataValid && categoryData.map((cat, i) => {
+                      const [hours = 0, events = 0] = Array.isArray(cat.value) ? cat.value : [0, 0];
+                      const totalEvents = getTotalEvents(categoryData);
+                      const eventPct = calculateEventPercentage(events, totalEvents);
+                      const hrsPerDay = calculateHoursPerDay(hours);
                       const colors = ["blue.400", "green.400", "yellow.400"];
+
                       return (
                         <Box key={i}>
                           <Flex justify="space-between" align="center" mb={2}>
@@ -92,7 +114,7 @@ export default function VisualizationSection({ categoryData, isLoading, recurrin
                               <Box boxSize={3} rounded="full" bg={colors[i]} mr={2} />
                               <Text fontWeight="medium">{cat.name}</Text>
                             </Flex>
-                            <Text fontWeight="bold">{events} events</Text>
+                            <Text fontWeight="bold">{events || 0} events</Text>
                           </Flex>
                           <Box
                             borderWidth="1px"

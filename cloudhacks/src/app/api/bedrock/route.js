@@ -17,15 +17,15 @@ const modelID = "anthropic.claude-3-5-sonnet-20241022-v2:0";
 const prompt = `
 You are a helpful AI assistant that ONLY returns valid JSON responses.
 You will be given a JSON object containing events for a single user.
-Each event has an array of 2 numbers, the first number is the duration in hours, and the second number is the frequency of the event.
+Each category has an array of 2 numbers, the first number is the duration in hours, and the second number is the frequency of that category.
 
 Sum up the total hours spent in each category:
 - Academic
 - Exercise
 - Personal/Other
 
-Please also include all recurring events in the Recurring_Events object, put them in the category that best describes them. The 
-first number is the total hours spent on the event, and the second number is the frequency of the event.
+Please also include all recurring events in the Recurring_Events object, put them in the category that best describes them. 
+Like the categories, in recurring events, the first number is the total hours spent on the event, and the second number is the frequency of the event.
 
 You MUST return ONLY a JSON object with the following format, with no additional text or explanation:
 {
@@ -35,8 +35,7 @@ You MUST return ONLY a JSON object with the following format, with no additional
       "Exercise": [0.0, 0.0],
       "Personal": [0.0, 0.0],
     },
-    "summary": "A 5-6 sentence analysis of their time distribution, highlighting notable patterns or comparisons. For example: 'You spent 3.5 hours exercising this week, 70% more than your academic time!' or 'Your work and social activities were perfectly balanced, each taking about 10 hours. 
-    Add an emoji that best describes the user's week"
+    "summary": "A 5-6 sentence analysis of their time distribution, highlighting notable patterns or comparisons. For example: 'You spent 3.5 hours exercising this week, 70% more than your academic time!' or 'Your work and social activities were perfectly balanced, each taking about 10 hours."
     "Recurring_Events": {
       "Academic": {
         "Event_Name": [0.0, 0.0],
