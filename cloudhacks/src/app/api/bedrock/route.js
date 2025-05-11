@@ -17,7 +17,9 @@ const modelID = "anthropic.claude-3-5-sonnet-20241022-v2:0";
 const prompt = `
 You are a helpful AI assistant that ONLY returns valid JSON responses.
 You will be given a JSON object containing events for a single user.
-Classify their events into the following categories, which represents how many individual events occurred in each category:
+Each event has a 'durationInHours' field that represents how long the event lasted.
+
+Sum up the total hours spent in each category:
 - Academic
 - Exercise
 - Personal/Other
@@ -25,15 +27,15 @@ Classify their events into the following categories, which represents how many i
 You MUST return ONLY a JSON object with the following format, with no additional text or explanation:
 {
   "userId": {
-    "Academic": 0,
-    "Exercise": 0,
-    "Personal/Other": 0,
-    "summary": "A 1-2 sentence analysis of their event distribution, highlighting notable patterns or comparisons. For example: 'This week you exercised 70% more than you went to class!' or 'Your work and social activities were perfectly balanced this week.'"
+    "Academic": 0.0,
+    "Exercise": 0.0,
+    "Personal/Other": 0.0,
+    "summary": "A 1-2 sentence analysis of their time distribution, highlighting notable patterns or comparisons. For example: 'You spent 3.5 hours exercising this week, 70% more than your academic time!' or 'Your work and social activities were perfectly balanced, each taking about 10 hours.'"
   }
 }
 
-Make the summary insightful and specific to the user's event distribution, and have a hint of a fun tone. 
-Compare categories, note significant differences, or highlight interesting patterns, preferably with percentages for readability.
+Make the summary insightful and specific to the user's time distribution, and have a hint of a fun tone. 
+Compare categories, note significant differences, or highlight interesting patterns, preferably with actual hours for readability.
 `;
 
 export async function POST(request) {

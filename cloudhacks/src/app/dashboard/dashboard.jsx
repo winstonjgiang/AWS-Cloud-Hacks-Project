@@ -9,10 +9,13 @@ import axios from "axios";
 import LoginForm from "./components/LoginForm";
 import UserDashboard from "./components/UserDashboard";
 import { analyzeData } from "../utils/analyzeData";
+import { Card } from "@chakra-ui/react";
+
 export default function Dashboard() {
   const auth = useAuth();
   const [categoryData, setCategoryData] = useState(null);
   const [googleUser, setGoogleUser] = useState(null);
+  const [summary, setSummary] = useState(null);
   const [page, setPage] = useState("home");
 
   const fetchEvents = async () => {
@@ -28,7 +31,7 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    console.log(categoryData);
+    console.log("CATEGORY DATA:", categoryData);
   }, [categoryData]);
 
   useEffect(() => {
@@ -71,7 +74,7 @@ export default function Dashboard() {
           const results = await Promise.all(post_events);
           console.log("All events processed:", results);
         }
-        await analyzeData(fetchedEvents, googleUser, setCategoryData);
+        await analyzeData(fetchedEvents, googleUser, setCategoryData, setSummary);
         setPage("dashboard");
 
       } catch (error) {
@@ -93,8 +96,6 @@ export default function Dashboard() {
             ? <UserDashboard categoryData={categoryData} />
             : <LoginForm auth={auth} page={page} setPage={setPage} />
         )}
-
-      </div>
     </>
   );
 }
