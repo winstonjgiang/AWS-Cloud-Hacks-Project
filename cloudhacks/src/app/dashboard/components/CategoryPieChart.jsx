@@ -90,12 +90,12 @@ const renderActiveShape = (props) => {
 };
 
 export default function CategoryPieChart({ data }) {
+
     const [activeIndex, setActiveIndex] = useState(0);
 
     const onPieEnter = (_, index) => {
         setActiveIndex(index);
     };
-
     const transformedData = data.map(item => ({
         ...item,
         pieValue: item.value[1] // Changed from value[0] to value[1] to use event count instead of hours

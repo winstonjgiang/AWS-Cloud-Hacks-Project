@@ -34,32 +34,31 @@ export default function UserDashboard({ categoryData, summary }) {
 
     // Calculate total from the array of objects
     const total = categoryData.reduce((sum, item) => sum + Number(item.value[0]), 0);
-
     return [
       {
         title: "Academic Time",
-        value: Number(categoryData[0]?.value[0] || 0),
+        value: categoryData[0]?.value[0] || 0,
         progress: Math.round((Number(categoryData[0]?.value[0] || 0) / total * 100)) || 0,
         icon: FaBook,
         color: "blue.400",
       },
       {
         title: "Exercise Time",
-        value: Number(categoryData[1]?.value[0] || 0),
+        value: categoryData[1]?.value[0] || 0,
         progress: Math.round((Number(categoryData[1]?.value[0] || 0) / total * 100)) || 0,
         icon: FaRunning,
         color: "green.400",
       },
       {
         title: "Personal Time",
-        value: Number(categoryData[2]?.value[0] || 0),
+        value: categoryData[2]?.value[0] || 0,
         progress: Math.round((Number(categoryData[2]?.value[0] || 0) / total * 100)) || 0,
         icon: FaHeart,
         color: "yellow.400",
       },
       {
         title: "Total Time",
-        value: Number(total),
+        value: total,
         progress: 100,
         icon: FaClock,
         color: "purple.400",

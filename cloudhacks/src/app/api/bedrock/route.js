@@ -24,13 +24,29 @@ Sum up the total hours spent in each category:
 - Exercise
 - Personal/Other
 
+Please also include all recurring events in the Recurring_Events object, put them in the category that best describes them. The 
+first number is the total hours spent on the event, and the second number is the frequency of the event.
+
 You MUST return ONLY a JSON object with the following format, with no additional text or explanation:
 {
   "userId": {
-    "Academic": [0.0, 0.0],
-    "Exercise": [0.0, 0.0],
-    "Personal/Other": [0.0, 0.0],
+    "Categories": {
+      "Academic": [0.0, 0.0],
+      "Exercise": [0.0, 0.0],
+      "Personal": [0.0, 0.0],
+    },
     "summary": "A 1-2 sentence analysis of their time distribution, highlighting notable patterns or comparisons. For example: 'You spent 3.5 hours exercising this week, 70% more than your academic time!' or 'Your work and social activities were perfectly balanced, each taking about 10 hours.'"
+    "Recurring_Events": {
+      "Academic": {
+        "Event_Name": [0.0, 0.0],
+      },
+      "Exercise": {
+        "Event_Name": [0.0, 0.0],
+      },
+      "Personal": {
+        "Event_Name": [0.0, 0.0],
+      }
+    }
   }
 }
 
@@ -83,7 +99,7 @@ export async function POST(request) {
       }),
     };
 
-    console.log("Sending request to Bedrock:", JSON.stringify(input, null, 2));
+    // console.log("Sending request to Bedrock:", JSON.stringify(input, null, 2));
 
     const command = new InvokeModelCommand(input);
     const response = await client.send(command);
