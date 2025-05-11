@@ -48,6 +48,12 @@ You MUST return ONLY a JSON object with the following format, with no additional
         "Event_Name": [0.0, 0.0],
       }
     }
+    "Tips": {
+      "Academic": "Based on the user's schedule, provide one tip for the user to improve their efficiency or make the most of their time",
+      "Exercise": "Based on the user's schedule, provide one tip for the user to improve their health or fitness",
+      "Personal": "Based on the user's schedule, provide one tip for the user to improve their work-life balance",
+      "General": "Based on the user's schedule, provide one tip for the user to improve their overall time distribution"
+    }
   }
 }
 

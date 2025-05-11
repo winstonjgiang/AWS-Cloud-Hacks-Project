@@ -18,6 +18,7 @@ export default function Dashboard() {
   const [summary, setSummary] = useState(null);
   const [page, setPage] = useState("home");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [aiTips, setAiTips] = useState(null);
 
   const fetchEvents = async () => {
     try {
@@ -80,7 +81,7 @@ export default function Dashboard() {
           const results = await Promise.all(post_events);
           console.log("All events processed:", results);
         }
-        await analyzeData(fetchedEvents, googleUser, setCategoryData, setSummary, setRecurringEvents);
+        await analyzeData(fetchedEvents, googleUser, setCategoryData, setSummary, setRecurringEvents, setAiTips);
 
       } catch (error) {
         console.error("Failed to initialize dashboard:", error);
@@ -98,11 +99,12 @@ export default function Dashboard() {
         {page === "home" && <LoginForm auth={auth} page={page} setPage={setPage} />}
         {page === "dashboard" && (
           auth.isAuthenticated
-            ? <UserDashboard 
-                categoryData={categoryData} 
-                summary={summary} 
-                recurringEvents={recurringEvents} 
-              />
+            ? <UserDashboard
+              categoryData={categoryData}
+              summary={summary}
+              recurringEvents={recurringEvents}
+              aiTips={aiTips}
+            />
             : <LoginForm auth={auth} page={page} setPage={setPage} />
         )}
       </div>
