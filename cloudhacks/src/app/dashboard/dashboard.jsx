@@ -92,7 +92,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <ChakraNav auth={auth} page={page} setPage={setPage} isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated}  />
+      <ChakraNav auth={auth} page={page} setPage={setPage} isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />
 
       <div>
         {page === "home" && <LoginForm auth={auth} page={page} setPage={setPage} />}
