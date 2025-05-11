@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Box,
   Flex,
@@ -27,6 +27,16 @@ export default function ChakraNav({ auth, page, setPage, isAuthenticated, setIsA
   const textColor = useColorModeValue("gray.600", "gray.200");
   const activeTextColor = useColorModeValue("gray.800", "white");
   const accentColor = "#FF9900"; // AWS Orange
+
+  // Control body overflow based on page
+  useEffect(() => {
+    document.body.style.overflowY = page === "home" ? "hidden" : "auto";
+    
+    // Cleanup function to reset overflow when component unmounts
+    return () => {
+      document.body.style.overflowY = "auto";
+    };
+  }, [page]);
 
   const navItems = [
     { label: "Home", action: () => setPage("home"), key: "home" },
@@ -70,16 +80,19 @@ export default function ChakraNav({ auth, page, setPage, isAuthenticated, setIsA
                 color={page === item.key ? activeTextColor : textColor}
                 bg={page === item.key ? activeBg : "transparent"}
                 transition="all 0.2s"
+                position="relative"
                 _hover={{
                   textDecoration: "none",
                   bg: hoverBg,
                   color: activeTextColor,
                   transform: "translateY(-1px)",
+                  _after: {
+                    width: "80%"
+                  }
                 }}
                 _active={{
-                  transform: "translateY(0)",
+                  transform: "translateY(0)"
                 }}
-                position="relative"
                 _after={{
                   content: '""',
                   position: "absolute",
@@ -89,12 +102,7 @@ export default function ChakraNav({ auth, page, setPage, isAuthenticated, setIsA
                   width: page === item.key ? "80%" : "0%",
                   height: "2px",
                   bg: accentColor,
-                  transition: "all 0.2s",
-                }}
-                _hover={{
-                  _after: {
-                    width: "80%",
-                  },
+                  transition: "all 0.2s"
                 }}
               >
                 {item.label}

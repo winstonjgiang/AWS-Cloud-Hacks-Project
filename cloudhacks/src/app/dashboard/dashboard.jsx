@@ -95,7 +95,7 @@ export default function Dashboard() {
     <>
       <ChakraNav auth={auth} page={page} setPage={setPage} isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />
 
-      <div>
+      <div className={page === "home" ? "overflow-hidden" : "overflow-auto"}>
         {page === "home" && <LoginForm auth={auth} page={page} setPage={setPage} />}
         {page === "dashboard" && (
           auth.isAuthenticated

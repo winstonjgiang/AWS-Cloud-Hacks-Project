@@ -31,8 +31,6 @@ export default function LoginForm({ auth, setPage }) {
     >
       <Flex
         direction={{ base: 'column', md: 'row' }}
-        boxShadow="lg"
-        borderRadius="xl"
         overflow="hidden"
         maxW="100%"
         w="full"
