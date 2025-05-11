@@ -12,20 +12,38 @@ export default function Dashboard() {
   const [accessToken, setAccessToken] = useState(null);
 
   const fetchEvents = async () => {
-    const result = await loadGapiClient(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
-    setEvents((result && result.events) || []);
-    setAccessToken((result && result.accessToken) || null);
+    try {
+      const googleResponse = await loadGapiClient(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
+      setEvents((googleResponse && googleResponse.events) || []);
+      setAccessToken((googleResponse && googleResponse.accessToken) || null);
+      return googleResponse;
+    } catch (error) {
+      console.error('Failed to fetch events:', error);
+      return null;
+    }
   };
 
   useEffect(() => {
-    if (!auth || !auth.isAuthenticated) {
-      return;
-    }
-    const authenticated = userMap(auth);
-    if (authenticated) {
-      axios.post('/api/create-user', authenticated);
-      fetchEvents();
-    }
+    const initializeDashboard = async () => {
+      if (!auth || !auth.isAuthenticated) {
+        return;
+      }
+
+      try {
+        const googleResponse = await fetchEvents();
+        console.log('Google Response:', googleResponse.googleUser);
+        
+        if (googleResponse) {
+          const authenticated = userMap(auth, googleResponse.googleUser);
+          console.log('Authenticated User:', authenticated);
+          await axios.post('/api/create-user', authenticated);
+        }
+      } catch (error) {
+        console.error('Failed to initialize dashboard:', error);
+      }
+    };
+
+    initializeDashboard();
   }, [auth]);
 
   return (

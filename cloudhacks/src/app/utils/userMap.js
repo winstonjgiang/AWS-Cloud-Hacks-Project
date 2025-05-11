@@ -1,6 +1,6 @@
 // src/utils/userMap.js
-
-export function userMap(auth) {
+ 
+export function userMap(auth, googleUser = null) {
   if (
     auth.isAuthenticated &&
     auth.user &&
@@ -12,7 +12,8 @@ export function userMap(auth) {
       userId:    auth.user.profile.sub,
       email:     auth.user.profile.email,
       createdAt: new Date().toISOString(),
-      name:      auth.user.profile.name || 'Unknown',
+      name:      auth.user.profile.name|| googleUser?.name || auth.user.profile.email,
+      googleId:  googleUser?.googleId,
     };
   }
   return null;

@@ -12,6 +12,7 @@ export async function createUser(user) {
       email:     user.email,
       createdAt: user.createdAt,
       name:      user.name,
+      googleId:  user.googleId
     },
   });
 

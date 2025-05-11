@@ -26,6 +26,12 @@ export default async function loadGapiClient(clientId) {
 
   // Get the current user
   const googleUser = auth.currentUser.get();
+  const googleUserInfo = googleUser.getBasicProfile();
+  const userInfo = {
+    googleId: googleUserInfo.getId(),
+    email: googleUserInfo.getEmail(),
+    name: googleUserInfo.getName(),
+  };
 
   // Get the auth response which contains the access token
   const authResponse = googleUser.getAuthResponse();
@@ -46,7 +52,9 @@ export default async function loadGapiClient(clientId) {
 
     console.log('Google Access Token:', accessToken);
 
+
     return {
+      googleUser: userInfo,
       events: response.result.items,
       accessToken: accessToken
     };
