@@ -1,50 +1,104 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Sector } from 'recharts';
+import { useState } from 'react';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
-const RADIAN = Math.PI / 180;
-const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index, name }) => {
-    // Calculate position for label
-    // Reduce radius to ensure label is inside the slice
-    const radius = innerRadius + (outerRadius - innerRadius) * 0.6; // Adjusted from 0.5 to 0.6 to move more towards outer edge
-    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+const renderActiveShape = (props) => {
+    const {
+        cx,
+        cy,
+        midAngle,
+        innerRadius,
+        outerRadius,
+        startAngle,
+        endAngle,
+        fill,
+        payload,
+        percent,
+        value
+    } = props;
 
-    // Calculate if we're on the left or right half of the pie
-    const isLeftSide = x < cx;
+    const RADIAN = Math.PI / 180;
+    const sx = cx + outerRadius * Math.cos(-midAngle * RADIAN);
+    const sy = cy + outerRadius * Math.sin(-midAngle * RADIAN);
+    const mx = cx + (outerRadius + 45) * Math.cos(-midAngle * RADIAN);
+    const my = cy + (outerRadius + 45) * Math.sin(-midAngle * RADIAN);
+    const ex = mx + (Math.cos(-midAngle * RADIAN) >= 0 ? 1 : -1) * 22;
+    const ey = my;
+    const textAnchor = Math.cos(-midAngle * RADIAN) >= 0 ? 'start' : 'end';
 
     return (
         <g>
-            {/* Add a white background to improve readability */}
+            {/* Background sector */}
+            <Sector
+                cx={cx}
+                cy={cy}
+                innerRadius={innerRadius}
+                outerRadius={outerRadius}
+                startAngle={startAngle}
+                endAngle={endAngle}
+                fill={fill}
+            />
+            {/* Outer active sector */}
+            <Sector
+                cx={cx}
+                cy={cy}
+                startAngle={startAngle}
+                endAngle={endAngle}
+                innerRadius={outerRadius + 6}
+                outerRadius={outerRadius + 10}
+                fill={fill}
+            />
+            {/* Label line starting from outer edge */}
+            <path
+                d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`}
+                stroke={fill}
+                fill="none"
+            />
+            <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
             <text
-                x={x}
-                y={y}
-                fill="black"
-                textAnchor="middle"
-                dominantBaseline="central"
-                fontSize={16}
+                x={ex + (Math.cos(-midAngle * RADIAN) >= 0 ? 1 : -1) * 12}
+                y={ey}
+                textAnchor={textAnchor}
+                fill="#333"
+                style={{ fontSize: '14px', fontWeight: 500 }}
             >
-                {`${name}`}
+                {payload.name}
             </text>
             <text
-                x={x}
-                y={y + 15} // Position percentage below the name
-                fill="black"
-                textAnchor="middle"
-                dominantBaseline="central"
-                fontSize={16}
+                x={ex + (Math.cos(-midAngle * RADIAN) >= 0 ? 1 : -1) * 12}
+                y={ey}
+                dy={18}
+                textAnchor={textAnchor}
+                fill="#999"
+                style={{ fontSize: '12px' }}
             >
                 {`${(percent * 100).toFixed(0)}%`}
+            </text>
+            <text
+                x={ex + (Math.cos(-midAngle * RADIAN) >= 0 ? 1 : -1) * 12}
+                y={ey}
+                dy={36}
+                textAnchor={textAnchor}
+                fill="#999"
+                style={{ fontSize: '12px' }}
+            >
+                {`(${payload.value[1]} events)`}
             </text>
         </g>
     );
 };
 
 export default function CategoryPieChart({ data }) {
-    // Transform the data to use hours (first element of value array) for the pie chart
+    const [activeIndex, setActiveIndex] = useState(0);
+
+    const onPieEnter = (_, index) => {
+        setActiveIndex(index);
+    };
+
     const transformedData = data.map(item => ({
         ...item,
-        pieValue: item.value[0] // Use the hours value for the pie chart
+        pieValue: item.value[1] // Changed from value[0] to value[1] to use event count instead of hours
     }));
 
     return (
@@ -53,16 +107,16 @@ export default function CategoryPieChart({ data }) {
                 <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                         <Pie
+                            activeIndex={activeIndex}
+                            activeShape={renderActiveShape}
                             data={transformedData}
                             cx="50%"
                             cy="45%"
-                            labelLine={false}
-                            label={renderCustomizedLabel}
-                            outerRadius={150}
-                            innerRadius={75} // Added inner radius to create a donut chart
+                            innerRadius={75}
+                            outerRadius={110}
                             fill="#8884d8"
                             dataKey="pieValue"
-                            paddingAngle={2} // Added small padding between slices
+                            onMouseEnter={onPieEnter}
                         >
                             {transformedData.map((entry, index) => (
                                 <Cell
