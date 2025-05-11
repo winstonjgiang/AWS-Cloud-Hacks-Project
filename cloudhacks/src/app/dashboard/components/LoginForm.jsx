@@ -9,13 +9,16 @@ import {
   Stack,
   useColorModeValue,
 } from '@chakra-ui/react'
-import CalendarStatsDemo from './Demo'
 import DashboardMetrics from './DashboardMetrics'
 
-export default function LoginForm({ auth }) {
+export default function LoginForm({ auth, setPage }) {
   const bg = useColorModeValue('gray.50', 'gray.800')
   const cardBg = useColorModeValue('white', 'gray.700')
   const headingColor = useColorModeValue('gray.800', 'white')
+  const handleOnClick = () => {
+    setPage("dashboard");
+    auth.signinRedirect();
+  }
 
 
   return (
@@ -45,7 +48,7 @@ export default function LoginForm({ auth }) {
               </Text>
             </Heading>
             <Text fontSize="lg" color="gray.600">
-              CalendarStats transforms your calendar data into actionable insights.
+              RateMyCalendar transforms your calendar data into actionable insights.
               Track your time, identify patterns, and optimize your schedule.
             </Text>
             <Button
@@ -53,7 +56,7 @@ export default function LoginForm({ auth }) {
               bg="#FF9900"
               color="white"
               w={{ base: 'full', sm: 'auto' }}
-              onClick={() => auth.signinRedirect()}
+              onClick={handleOnClick}
               borderRadius="md"
               py={6}
             >
