@@ -91,10 +91,6 @@ export default function Dashboard() {
         ) : (
           <LoginForm auth={auth} />
         )}
-
-        <h1>googleID: {googleUser?.googleId}</h1>
-
-        <h1>{tokenManager.getToken()}</h1>
       </div>
     </>
   );

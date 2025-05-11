@@ -18,6 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import Link from "next/link";
+import Logo from "./Logo";
 
 const NavLinks = [
   { label: "Home", href: "/" },
@@ -40,7 +41,7 @@ export default function ChakraNav() {
           onClick={isOpen ? onClose : onOpen}
         />
         <HStack spacing={8} alignItems="center">
-          <Box fontWeight="bold" fontSize="lg">MyApp</Box>
+        <Logo className="w-20 h-16" />
           <HStack as="nav" spacing={4} display={{ base: "none", md: "flex" }}>
             {NavLinks.map((link) => (
               <ChakraLink
