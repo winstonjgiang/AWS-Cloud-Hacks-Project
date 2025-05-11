@@ -46,8 +46,10 @@ async function loadGapiClient(clientId) {
       calendarId: 'primary',
       singleEvents: true,
       orderBy: 'startTime',
-      timeMin: oneWeekBefore(),
+      // timeMin: oneWeekBefore(), //change after demo
+      timeMin: "2025-05-03T22:25:27.803Z",
       timeMax: today(),
+      // timeMax: "2025-05-11T22:25:27.803Z",
     });
 
 

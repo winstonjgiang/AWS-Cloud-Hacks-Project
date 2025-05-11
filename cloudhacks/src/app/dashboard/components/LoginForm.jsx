@@ -56,6 +56,9 @@ export default function LoginForm({ auth, setPage }) {
               onClick={handleOnClick}
               borderRadius="md"
               py={6}
+              auth={auth}
+              disabled={auth.isAuthenticated}
+              _hover={{ bg: "#E68A00" }}
             >
               Sign in with Google
             </Button>

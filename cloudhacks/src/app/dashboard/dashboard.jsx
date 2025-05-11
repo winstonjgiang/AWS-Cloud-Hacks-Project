@@ -105,7 +105,7 @@ export default function Dashboard() {
               recurringEvents={recurringEvents}
               aiTips={aiTips}
             />
-            : <LoginForm auth={auth} page={page} setPage={setPage} />
+            : <LoginForm auth={auth} isAuthenticated={isAuthenticated} page={page} setPage={setPage} />
         )}
       </div>
     </>
