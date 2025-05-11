@@ -1,14 +1,5 @@
 'use client';
 
-import { useAuth } from 'react-oidc-context';
-import { useEffect, useState } from 'react';
-import { userMap } from '../utils/userMap';
-import loadGapiClient from '../utils/gapi';
-import axios from 'axios';
-import { testBedrockAPI } from '../services/bedrock';
-import CategoryPieChart from './components/CategoryPieChart';
-
-
 import { useAuth } from "react-oidc-context";
 import { useEffect, useState } from "react";
 import { userMap, eventMap } from "../utils/userMap";
@@ -18,22 +9,30 @@ import loadGapiClient from "../utils/gapi";
 import axios from "axios";
 import LoginForm from "./components/LoginForm";
 import UserDashboard from "./components/UserDashboard";
+import { invokeBedrockAPI } from "../services/bedrock";
+import CategoryPieChart from "./components/CategoryPieChart";
+
 export default function Dashboard() {
   const auth = useAuth();
-
   const [categoryData, setCategoryData] = useState(null);
+  const [events, setEvents] = useState([]);
 
-	const analyzeData = async () => {
-		const analysis = await testBedrockAPI(result.events);
-		if (analysis && Object.keys(analysis).length > 0) {
-			const userId = Object.keys(analysis)[0];
-			const userData = analysis[userId];
-			const chartData = Object.entries(userData)
-				.filter(([key]) => key !== 'summary')
-				.map(([name, value]) => ({ name, value }));
-			setCategoryData(chartData);
-		}
-	};
+  const analyzeData = async (eventsData) => {
+    try {
+      const analysis = await invokeBedrockAPI(eventsData);
+      if (analysis && Object.keys(analysis).length > 0) {
+        const userId = Object.keys(analysis)[0];
+        const userData = analysis[userId];
+        const chartData = Object.entries(userData)
+          .filter(([key]) => key !== 'summary')
+          .map(([name, value]) => ({ name, value }));
+        setCategoryData(chartData);
+      }
+    } catch (error) {
+      console.error("Error analyzing data:", error);
+    }
+  };
+
   const fetchEvents = async () => {
     try {
       const googleResponse = await loadGapiClient(
@@ -54,24 +53,28 @@ export default function Dashboard() {
 
       try {
         const googleResponse = await fetchEvents();
-        const { events } = googleResponse;
+        if (!googleResponse) return;
+
+        const { events: fetchedEvents } = googleResponse;
+        setEvents(fetchedEvents);
         console.log("Google Response:", googleResponse.googleUser);
 
-        if (googleResponse) {
-          const authenticated = userMap(auth, googleResponse.googleUser);
-          await axios.post("/api/user", authenticated);
+        const authenticated = userMap(auth, googleResponse.googleUser);
+        await axios.post("/api/user", authenticated);
 
-          const post_events = events.map((event) => {
-            const event_promise = eventMap(
-              googleResponse.googleUser.googleId,
-              event
-            );
-            return axios.post("/api/events", event_promise);
-          });
+        const post_events = fetchedEvents.map((event) => {
+          const event_promise = eventMap(
+            googleResponse.googleUser.googleId,
+            event
+          );
+          return axios.post("/api/events", event_promise);
+        });
 
-          const results = await Promise.all(post_events);
-          console.log("All events processed:", results);
-        }
+        const results = await Promise.all(post_events);
+        console.log("All events processed:", results);
+
+        // Analyze the events data after processing
+        await analyzeData(fetchedEvents);
       } catch (error) {
         console.error("Failed to initialize dashboard:", error);
       }
@@ -81,27 +84,25 @@ export default function Dashboard() {
   }, [auth]);
 
   return (
-		<>
-			<ChakraNav />
+    <>
+      <ChakraNav />
 
-			<div>
-				{auth.isAuthenticated ? (
-					<UserDashboard />
-				) : (
-					<LoginForm auth={auth} />
-				)}
+      <div>
+        {auth.isAuthenticated ? (
+          <UserDashboard />
+        ) : (
+          <LoginForm auth={auth} />
+        )}
 
-				<h1>{tokenManager.getToken()}</h1>
+        <h1>{tokenManager.getToken()}</h1>
 
-				{categoryData ? (
-					<CategoryPieChart data={categoryData} />
-				) : (
-					<div>Loading category data...</div>
-				)}
-
-				{/* You can render events here if needed */}
-			</div>
-		</>
+        {categoryData ? (
+          <CategoryPieChart data={categoryData} />
+        ) : (
+          <div>Loading category data...</div>
+        )}
+      </div>
+    </>
   );
 }
 

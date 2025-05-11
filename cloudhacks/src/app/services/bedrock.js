@@ -1,4 +1,4 @@
-export async function testBedrockAPI(events) {
+export async function invokeBedrockAPI(events) {
   try {
     const response = await fetch("/api/bedrock", {
       method: "POST",
