@@ -13,32 +13,8 @@ import { analyzeData } from "../utils/analyzeData";
 export default function Dashboard() {
   const auth = useAuth();
   const [categoryData, setCategoryData] = useState(null);
+  const [googleUser, setGoogleUser] = useState(null);
 
-  const analyzeData = async (eventsData, user) => {
-    try {
-      if (!user?.googleId) {
-        console.error("Cannot analyze data: Google user ID is not available");
-        return;
-      }
-
-      console.log("Analyzing data for user:", user.googleId);
-      const analysis = await invokeBedrockAPI({
-        userId: user.googleId,
-        events: eventsData
-      });
-
-      if (analysis && Object.keys(analysis).length > 0) {
-        const userId = Object.keys(analysis)[0];
-        const userData = analysis[userId];
-        const chartData = Object.entries(userData)
-          .filter(([key]) => key !== 'summary')
-          .map(([name, value]) => ({ name, value }));
-        setCategoryData(chartData);
-      }
-    } catch (error) {
-      console.error("Error analyzing data:", error);
-    }
-  };
 
 
   const fetchEvents = async () => {
@@ -54,6 +30,10 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
+    console.log(categoryData);
+  }, [categoryData]);
+
+  useEffect(() => {
     const initializeDashboard = async () => {
       if (!auth || !auth.isAuthenticated) {
         return;
@@ -65,6 +45,7 @@ export default function Dashboard() {
 
 
         const { googleUser, events: fetchedEvents } = googleResponse;
+        setGoogleUser(googleUser);
 
         const authenticated = userMap(auth, googleResponse.googleUser);
         let existingUser = false;
@@ -93,7 +74,7 @@ export default function Dashboard() {
           });
           const results = await Promise.all(post_events);
           console.log("All events processed:", results);
-        await analyzeData(fetchedEvents, googleUser);
+        await analyzeData(fetchedEvents, googleUser, setCategoryData);
           
         }
 
