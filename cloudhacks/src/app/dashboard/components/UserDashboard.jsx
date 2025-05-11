@@ -6,7 +6,6 @@ export default function UserDashboard({ categoryData }) {
     <>
       <div>
         <h1>User Dashboard</h1>
-        {console.log(categoryData)}
         {categoryData ? (
           <CategoryPieChart data={categoryData} />
         ) : (

@@ -1,168 +1,156 @@
-import { BookOpen, Activity, Heart, Clock } from "lucide-react";
+import React from 'react';
+import { Box, Grid, Flex, Heading, Text, Icon, Progress, Stack } from '@chakra-ui/react';
+import { BookOpen, Activity, Heart, Clock } from 'lucide-react';
 
 export default function DashboardMetrics() {
   return (
-    <div className="bg-white p-8 rounded-lg shadow-sm">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">User Dashboard</h1>
-        <p className="text-gray-600">
+    <Box bg="white" p={8} rounded="lg" shadow="sm">
+      {/* Header */}
+      <Box mb={6}>
+        <Heading as="h1" size="xl" color="gray.800" mb={2}>
+          User Dashboard
+        </Heading>
+        <Text color="gray.600">
           Track your progress and manage your activities
-        </p>
-      </div>
+        </Text>
+      </Box>
 
       {/* Metrics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {/* Academic Hours Card */}
-        <div className="bg-white border rounded-lg p-4">
-          <div className="mb-3">
-            <h3 className="text-gray-600 font-medium">Academic Hours</h3>
-          </div>
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-3xl font-bold text-gray-800">32.5</span>
-            <div className="h-10 w-10 rounded-md bg-blue-100 flex items-center justify-center">
-              <BookOpen className="h-5 w-5 text-blue-500" />
-            </div>
-          </div>
-          <div className="w-full bg-gray-100 rounded-full h-2 mb-1">
-            <div
-              className="bg-blue-500 h-2 rounded-full"
-              style={{ width: "47%" }}
-            ></div>
-          </div>
-          <p className="text-xs text-gray-500">47% of your weekly goal</p>
-        </div>
+      <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }} gap={4} mb={8}>
+        {/* Academic Hours */}
+        <Box bg="white" borderWidth="1px" rounded="lg" p={4}>
+          <Text fontSize="sm" fontWeight="medium" color="gray.600" mb={3}>
+            Academic Hours
+          </Text>
+          <Flex justify="space-between" align="center" mb={2}>
+            <Text fontSize="3xl" fontWeight="bold" color="gray.800">
+              32.5
+            </Text>
+            <Flex align="center" justify="center" bg="blue.50" rounded="md" h={10} w={10}>
+              <Icon as={BookOpen} boxSize={5} color="blue.500" />
+            </Flex>
+          </Flex>
+          <Progress value={47} size="xs" colorScheme="blue" mb={1} rounded="full" />
+          <Text fontSize="xs" color="gray.500">
+            47% of your weekly goal
+          </Text>
+        </Box>
 
-        {/* Exercise Time Card */}
-        <div className="bg-white border rounded-lg p-4">
-          <div className="mb-3">
-            <h3 className="text-gray-600 font-medium">Exercise Time</h3>
-          </div>
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-3xl font-bold text-gray-800">28.0</span>
-            <div className="h-10 w-10 rounded-md bg-green-100 flex items-center justify-center">
-              <Activity className="h-5 w-5 text-green-500" />
-            </div>
-          </div>
-          <div className="w-full bg-gray-100 rounded-full h-2 mb-1">
-            <div
-              className="bg-green-500 h-2 rounded-full"
-              style={{ width: "40%" }}
-            ></div>
-          </div>
-          <p className="text-xs text-gray-500">40% of your weekly goal</p>
-        </div>
+        {/* Exercise Time */}
+        <Box bg="white" borderWidth="1px" rounded="lg" p={4}>
+          <Text fontSize="sm" fontWeight="medium" color="gray.600" mb={3}>
+            Exercise Time
+          </Text>
+          <Flex justify="space-between" align="center" mb={2}>
+            <Text fontSize="3xl" fontWeight="bold" color="gray.800">
+              28.0
+            </Text>
+            <Flex align="center" justify="center" bg="green.50" rounded="md" h={10} w={10}>
+              <Icon as={Activity} boxSize={5} color="green.500" />
+            </Flex>
+          </Flex>
+          <Progress value={40} size="xs" colorScheme="green" mb={1} rounded="full" />
+          <Text fontSize="xs" color="gray.500">
+            40% of your weekly goal
+          </Text>
+        </Box>
 
-        {/* Personal Time Card */}
-        <div className="bg-white border rounded-lg p-4">
-          <div className="mb-3">
-            <h3 className="text-gray-600 font-medium">
-              <h3 className="text-gray-600 font-medium">Personal Time</h3>
-            </h3>
-          </div>
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-3xl font-bold text-gray-800">9.0</span>
-            <div className="h-10 w-10 rounded-md bg-yellow-100 flex items-center justify-center">
-              <Heart className="h-5 w-5 text-yellow-500" />
-            </div>
-          </div>
-          <div className="w-full bg-gray-100 rounded-full h-2 mb-1">
-            <div
-              className="bg-yellow-500 h-2 rounded-full"
-              style={{ width: "13%" }}
-            ></div>
-          </div>
-          <p className="text-xs text-gray-500">13% of your weekly goal</p>
-        </div>
+        {/* Personal Time */}
+        <Box bg="white" borderWidth="1px" rounded="lg" p={4}>
+          <Text fontSize="sm" fontWeight="medium" color="gray.600" mb={3}>
+            Personal Time
+          </Text>
+          <Flex justify="space-between" align="center" mb={2}>
+            <Text fontSize="3xl" fontWeight="bold" color="gray.800">
+              9.0
+            </Text>
+            <Flex align="center" justify="center" bg="yellow.50" rounded="md" h={10} w={10}>
+              <Icon as={Heart} boxSize={5} color="yellow.500" />
+            </Flex>
+          </Flex>
+          <Progress value={13} size="xs" colorScheme="yellow" mb={1} rounded="full" />
+          <Text fontSize="xs" color="gray.500">
+            13% of your weekly goal
+          </Text>
+        </Box>
 
-        {/* Total Hours Card */}
-        <div className="bg-white border rounded-lg p-4">
-          <div className="mb-3">
-            <h3 className="text-gray-600 font-medium">Total Hours</h3>
-          </div>
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-3xl font-bold text-gray-800">69.5</span>
-            <div className="h-10 w-10 rounded-md bg-purple-100 flex items-center justify-center">
-              <Clock className="h-5 w-5 text-purple-500" />
-            </div>
-          </div>
-          <div className="w-full bg-gray-100 rounded-full h-2 mb-1">
-            <div
-              className="bg-purple-500 h-2 rounded-full"
-              style={{ width: "83%" }}
-            ></div>
-          </div>
-          <p className="text-xs text-gray-500">83% of your weekly capacity</p>
-        </div>
-      </div>
+        {/* Total Hours */}
+        <Box bg="white" borderWidth="1px" rounded="lg" p={4}>
+          <Text fontSize="sm" fontWeight="medium" color="gray.600" mb={3}>
+            Total Hours
+          </Text>
+          <Flex justify="space-between" align="center" mb={2}>
+            <Text fontSize="3xl" fontWeight="bold" color="gray.800">
+              69.5
+            </Text>
+            <Flex align="center" justify="center" bg="purple.50" rounded="md" h={10} w={10}>
+              <Icon as={Clock} boxSize={5} color="purple.500" />
+            </Flex>
+          </Flex>
+          <Progress value={83} size="xs" colorScheme="purple" mb={1} rounded="full" />
+          <Text fontSize="xs" color="gray.500">
+            83% of your weekly capacity
+          </Text>
+        </Box>
+      </Grid>
 
       {/* Visualization Section */}
-      <div className="border rounded-lg bg-white p-6">
-        <h2 className="text-xl font-bold mb-6 text-gray-800">
+      <Box borderWidth="1px" rounded="lg" bg="white" p={6}>
+        <Heading as="h2" size="lg" color="gray.800" mb={6}>
           Your Week, Visualized
-        </h2>
+        </Heading>
 
-        <div className="flex flex-col md:flex-row gap-8 items-center">
+        <Flex direction={{ base: 'column', md: 'row' }} gap={8} align="center">
           {/* Total Hours Box */}
-          <div className="bg-gray-100 p-8 rounded-md flex flex-col items-center justify-center w-48 h-48">
-            <p className="text-gray-600 mb-1">Total</p>
-            <p className="text-3xl font-bold text-gray-800">69.5h</p>
-          </div>
+          <Box bg="gray.100" p={8} rounded="md" d="flex" flexDir="column" alignItems="center" justifyContent="center" w={48} h={48}>
+            <Text color="gray.600" mb={1}>
+              Total
+            </Text>
+            <Text fontSize="3xl" fontWeight="bold" color="gray.800">
+              69.5h
+            </Text>
+          </Box>
 
           {/* Progress Bars */}
-          <div className="flex-1 space-y-6">
+          <Stack flex={1} spacing={6}>
             {/* Academic Progress */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center">
-                  <span className="mr-2 inline-block w-3 h-3 rounded-full bg-blue-500"></span>
-                  <span>Academic</span>
-                </div>
-                <span className="font-medium">47%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2.5">
-                <div
-                  className="bg-blue-500 h-2.5 rounded-full"
-                  style={{ width: "47%" }}
-                ></div>
-              </div>
-            </div>
+            <Box>
+              <Flex justify="space-between" align="center" mb={2}>
+                <Flex align="center">
+                  <Box boxSize={3} rounded="full" bg="blue.500" mr={2} />
+                  <Text>Academic</Text>
+                </Flex>
+                <Text fontWeight="medium">47%</Text>
+              </Flex>
+              <Progress value={47} size="sm" colorScheme="blue" rounded="full" />
+            </Box>
 
             {/* Exercise Progress */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center">
-                  <span className="mr-2 inline-block w-3 h-3 rounded-full bg-green-500"></span>
-                  <span>Exercise</span>
-                </div>
-                <span className="font-medium">40%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2.5">
-                <div
-                  className="bg-green-500 h-2.5 rounded-full"
-                  style={{ width: "40%" }}
-                ></div>
-              </div>
-            </div>
+            <Box>
+              <Flex justify="space-between" align="center" mb={2}>
+                <Flex align="center">
+                  <Box boxSize={3} rounded="full" bg="green.500" mr={2} />
+                  <Text>Exercise</Text>
+                </Flex>
+                <Text fontWeight="medium">40%</Text>
+              </Flex>
+              <Progress value={40} size="sm" colorScheme="green" rounded="full" />
+            </Box>
 
             {/* Personal Progress */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center">
-                  <span className="mr-2 inline-block w-3 h-3 rounded-full bg-yellow-500"></span>
-                  <span>Personal/Other</span>
-                </div>
-                <span className="font-medium">13%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2.5">
-                <div
-                  className="bg-yellow-500 h-2.5 rounded-full"
-                  style={{ width: "13%" }}
-                ></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+            <Box>
+              <Flex justify="space-between" align="center" mb={2}>
+                <Flex align="center">
+                  <Box boxSize={3} rounded="full" bg="yellow.500" mr={2} />
+                  <Text>Personal/Other</Text>
+                </Flex>
+                <Text fontWeight="medium">13%</Text>
+              </Flex>
+              <Progress value={13} size="sm" colorScheme="yellow" rounded="full" />
+            </Box>
+          </Stack>
+        </Flex>
+      </Box>
+    </Box>
   );
 }
