@@ -1,95 +1,97 @@
-// src/app/components/WeekCalendar.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
-import { gapi } from 'gapi-script';
-import { loadGapiClient } from '@/app/utils/gapi';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from "react-oidc-context";
+import loadGapiClient from '@/app/utils/gapi';
 
-type GCalEvent = {
-  id: string;
-  summary?: string;
-  start: { dateTime?: string; date?: string };
-};
+const CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!;
 
-export default function SimpleCalendar() {
-  const [events, setEvents]   = useState<GCalEvent[]>([]);
+export default function Calendar() {
+  const auth = useAuth();
+  const [events, setEvents] = useState<any[]>([]);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const CLIENT_ID             = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!;
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    (async () => {
+    const initializeCalendar = async () => {
+      // Only proceed if user is authenticated with Cognito
+      if (!auth.isAuthenticated) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        // 1️⃣ load & init gapi
-        await loadGapiClient(CLIENT_ID);
-
-        const auth2 = gapi.auth2.getAuthInstance();
-        // 2️⃣ silently sign in (will only show UI if user hasn’t granted calendar scope)
-        if (!auth2.isSignedIn.get()) {
-          await auth2.signIn({ prompt: 'none' });
+        const result = await loadGapiClient(CLIENT_ID);
+        if (result) {
+          setEvents(result.events);
+          setAccessToken(result.accessToken);
+          console.log('Google Access Token:', result.accessToken);
         }
-
-        // 3️⃣ fetch next 7 days
-        const now    = new Date();
-        const timeMin = now.toISOString();
-        now.setDate(now.getDate() + 7);
-        const timeMax = now.toISOString();
-
-        const resp = await gapi.client.calendar.events.list({
-          calendarId: 'primary',
-          timeMin,
-          timeMax,
-          singleEvents: true,
-          orderBy: 'startTime',
-        });
-
-        setEvents(resp.result.items || []);
-      } catch (err) {
-        console.error('Calendar load failed', err);
+      } catch (err: any) {
+        console.error('Failed to initialize calendar:', err);
+        setError(err.message || 'Failed to load calendar');
       } finally {
         setLoading(false);
       }
-    })();
-  }, []);
+    };
 
-  if (loading) return <p>Loading calendar…</p>;
-  if (!events.length) return <p>No events in the upcoming week.</p>;
+    initializeCalendar();
+  }, [auth.isAuthenticated]);
 
-  // group by day
-  const grouped: Record<string, GCalEvent[]> = {};
-  events.forEach(e => {
-    const day = (e.start.dateTime || e.start.date)!.slice(0,10);
-    (grouped[day] ||= []).push(e);
-  });
+  if (!auth.isAuthenticated) {
+    return (
+      <div className="p-4">
+        <button
+          onClick={() => auth.signinRedirect()}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+        >
+          Sign in with Cognito
+        </button>
+      </div>
+    );
+  }
 
-  // render 7‐column week
-  const today = new Date();
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-4">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4 text-red-600">
+        {error}
+      </div>
+    );
+  }
+
+  if (!events.length) {
+    return (
+      <div className="p-4 text-gray-600">
+        No upcoming events found
+      </div>
+    );
+  }
+
   return (
-    <div style={{ display: 'flex', gap: 12 }}>
-      {Array.from({ length: 7 }).map((_, i) => {
-        const day = new Date(today);
-        day.setDate(day.getDate() + i);
-        const key = day.toISOString().slice(0,10);
-        const list = grouped[key] || [];
-        return (
-          <div key={key} style={{ flex: 1, border: '1px solid #ccc', padding: 8 }}>
-            <h4 style={{ fontSize: 14, marginBottom: 4 }}>
-              {day.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}
-            </h4>
-            {list.length ? (
-              <ul style={{ padding: 0, listStyle: 'none', margin: 0 }}>
-                {list.map(ev => {
-                  const time = new Date((ev.start.dateTime||ev.start.date)!).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-                  return <li key={ev.id} style={{ marginBottom: 4 }}>
-                    <strong>{time}</strong> {ev.summary}
-                  </li>;
-                })}
-              </ul>
-            ) : (
-              <p style={{ fontStyle:'italic', color:'#666', fontSize:12 }}>No events</p>
-            )}
-          </div>
-        );
-      })}
+    <div className="p-4">
+      <h2 className="text-xl font-bold mb-4">Upcoming Events</h2>
+      <ul className="space-y-4">
+        {events.map(ev => (
+          <li 
+            key={ev.id}
+            className="p-4 border rounded-lg shadow-sm hover:shadow-md transition-shadow"
+          >
+            <strong className="font-semibold">{ev.summary || '(no title)'}</strong>
+            <div className="text-sm text-gray-600">
+              {new Date(ev.start.dateTime || ev.start.date).toLocaleString()}
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
   );
-}
+} 
