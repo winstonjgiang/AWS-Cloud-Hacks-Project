@@ -4,11 +4,17 @@ export const analyzeData = async (
   eventsData,
   user,
   setCategoryData,
-  setSummary
+  setSummary,
+  setRecurringEvents
 ) => {
   try {
     if (!user?.googleId) {
       console.error("Cannot analyze data: Google user ID is not available");
+      return;
+    }
+
+    if (!Array.isArray(eventsData) || eventsData.length === 0) {
+      console.warn("No events data provided");
       return;
     }
 
@@ -18,17 +24,36 @@ export const analyzeData = async (
       events: eventsData,
     });
 
-    if (analysis && Object.keys(analysis).length > 0) {
-      const userId = Object.keys(analysis)[0];
-      const userData = analysis[userId];
-      console.log("USER DATA:", userData);
-      const chartData = Object.entries(userData)
-        .filter(([key]) => key !== "summary")
-        .map(([name, value]) => ({ name, value }));
-      setSummary(userData.summary);
-      setCategoryData(chartData);
-      console.log(chartData);
+    // make sure we got something back
+    if (
+      !analysis ||
+      typeof analysis !== "object" ||
+      Object.keys(analysis).length === 0
+    ) {
+      console.warn("Empty analysis result");
+      return;
     }
+
+    // assume the API returns { "<userId>": { summary, Categories, Recurring_Events } }
+    const [firstKey] = Object.keys(analysis);
+    const userData = analysis[firstKey];
+
+    console.log("RAW USER DATA:", userData);
+
+    // 1) summary
+    setSummary(userData.summary || "");
+
+    // 2) categories: build the array your chart needs
+    const chartData = userData.Categories
+      ? Object.entries(userData.Categories).map(([name, value]) => ({
+          name,
+          value,
+        }))
+      : [];
+    setCategoryData(chartData);
+
+    // 3) recurring events
+    setRecurringEvents(userData.Recurring_Events || []);
   } catch (error) {
     console.error("Error analyzing data:", error);
   }

@@ -15,6 +15,7 @@ export default function Dashboard() {
   const auth = useAuth();
   const [categoryData, setCategoryData] = useState(null);
   const [googleUser, setGoogleUser] = useState(null);
+  const [recurringEvents, setRecurringEvents] = useState(null);
   const [summary, setSummary] = useState(null);
   const [page, setPage] = useState("home");
 
@@ -33,6 +34,10 @@ export default function Dashboard() {
   useEffect(() => {
     console.log("CATEGORY DATA:", categoryData);
   }, [categoryData]);
+
+  useEffect(() => {
+    console.log("RECURRING EVENTS:", recurringEvents);
+  }, [recurringEvents]);
 
   useEffect(() => {
     const initializeDashboard = async () => {
@@ -74,7 +79,7 @@ export default function Dashboard() {
           const results = await Promise.all(post_events);
           console.log("All events processed:", results);
         }
-        await analyzeData(fetchedEvents, googleUser, setCategoryData, setSummary);
+        await analyzeData(fetchedEvents, googleUser, setCategoryData, setSummary, setRecurringEvents);
         setPage("dashboard");
 
       } catch (error) {
@@ -93,7 +98,11 @@ export default function Dashboard() {
         {page === "home" && <LoginForm auth={auth} page={page} setPage={setPage} />}
         {page === "dashboard" && (
           auth.isAuthenticated
-            ? <UserDashboard categoryData={categoryData} summary={summary} />
+            ? <UserDashboard 
+                categoryData={categoryData} 
+                summary={summary} 
+                recurringEvents={recurringEvents} 
+              />
             : <LoginForm auth={auth} page={page} setPage={setPage} />
         )}
       </div>

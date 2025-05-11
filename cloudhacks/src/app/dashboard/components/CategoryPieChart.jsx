@@ -41,6 +41,7 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
 };
 
 export default function CategoryPieChart({ data }) {
+    console.log("data:", data);
     // Transform the data to use hours (first element of value array) for the pie chart
     const transformedData = data.map(item => ({
         ...item,
