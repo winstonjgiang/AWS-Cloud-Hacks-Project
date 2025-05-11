@@ -20,34 +20,35 @@ import CategoryPieChart from "./CategoryPieChart";
 export default function UserDashboard({ categoryData, summary }) {
   const cardBg = useColorModeValue("white", "gray.700");
   const borderColor = useColorModeValue("gray.200", "gray.600");
+  const titleColor = "#232F3E"; // AWS Navy for titles
+  const accentColor = "#FF9900"; // AWS Orange for accents
 
   // Transform the categoryData into usable stats
   const getStatsFromCategoryData = () => {
     if (!categoryData) return null;
 
     // Calculate total from the array of objects
-    console.log("SUMMARY:", summary);
-    const total = categoryData.reduce((sum, item) => sum + Number(item.value), 0);
+    const total = categoryData.reduce((sum, item) => sum + Number(item.value[0]), 0);
 
     return [
       {
         title: "Academic Time",
-        value: Number(categoryData[0]?.value || 0),
-        progress: Math.round((Number(categoryData[0]?.value || 0) / total * 100)) || 0,
+        value: Number(categoryData[0]?.value[0] || 0),
+        progress: Math.round((Number(categoryData[0]?.value[0] || 0) / total * 100)) || 0,
         icon: FaBook,
         color: "blue.400",
       },
       {
         title: "Exercise Time",
-        value: Number(categoryData[1]?.value || 0),
-        progress: Math.round((Number(categoryData[1]?.value || 0) / total * 100)) || 0,
+        value: Number(categoryData[1]?.value[0] || 0),
+        progress: Math.round((Number(categoryData[1]?.value[0] || 0) / total * 100)) || 0,
         icon: FaRunning,
         color: "green.400",
       },
       {
         title: "Personal Time",
-        value: Number(categoryData[2]?.value || 0),
-        progress: Math.round((Number(categoryData[2]?.value || 0) / total * 100)) || 0,
+        value: Number(categoryData[2]?.value[0] || 0),
+        progress: Math.round((Number(categoryData[2]?.value[0] || 0) / total * 100)) || 0,
         icon: FaHeart,
         color: "yellow.400",
       },
@@ -110,7 +111,12 @@ export default function UserDashboard({ categoryData, summary }) {
     <Box p={8} maxW="1400px" mx="auto">
       {/* Header */}
       <Stack spacing={3} mb={8}>
-        <Heading size="lg">User Dashboard</Heading>
+        <Heading size="lg" color={titleColor}>
+          User Dashboard
+          <Text as="span" color={accentColor} ml={2}>
+            Overview
+          </Text>
+        </Heading>
         <Text color="gray.500">Track your progress and manage your activities</Text>
       </Stack>
 
@@ -218,7 +224,12 @@ export default function UserDashboard({ categoryData, summary }) {
       {/* Visualization Section */}
       <Card bg={cardBg} borderColor={borderColor} borderWidth="1px" borderRadius="lg">
         <CardBody>
-          <Heading size="md" mb={6}>Your Week, Visualized</Heading>
+          <Heading size="md" mb={6} color={titleColor}>
+            Your Week,
+            <Text as="span" color={accentColor} ml={2}>
+              Visualized
+            </Text>
+          </Heading>
           {!categoryData ? (
             <Box height="400px" position="relative">
               <Flex
@@ -233,7 +244,65 @@ export default function UserDashboard({ categoryData, summary }) {
               </Flex>
             </Box>
           ) : (
-            <CategoryPieChart data={categoryData} />
+            <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={8}>
+              {/* Left side - Pie Chart */}
+              <Box>
+                <CategoryPieChart data={categoryData} />
+              </Box>
+
+              {/* Right side - Detailed Statistics */}
+              <Box>
+                <Stack spacing={6}>
+                  {categoryData.map((category, index) => {
+                    const [hours, eventCount] = category.value;
+                    // Calculate total events across all categories
+                    const totalEvents = categoryData.reduce((sum, cat) => sum + Number(cat.value[1]), 0);
+                    // Calculate event frequency percentage
+                    const eventPercentage = Math.round((eventCount / totalEvents) * 100);
+                    const hoursPerDay = (hours / 7).toFixed(1);
+
+                    return (
+                      <Box key={index}>
+                        <Flex justify="space-between" align="center" mb={2}>
+                          <Flex align="center">
+                            <Box
+                              boxSize={3}
+                              rounded="full"
+                              bg={['blue.400', 'green.400', 'yellow.400'][index]}
+                              mr={2}
+                            />
+                            <Text fontWeight="medium">{category.name}</Text>
+                          </Flex>
+                          <Stack align="flex-end">
+                            <Text fontWeight="bold">
+                              {eventCount} events
+                            </Text>
+                          </Stack>
+                        </Flex>
+                        <Box borderWidth="1px" p={4} borderRadius="md" bg={useColorModeValue("gray.50", "gray.700")}>
+                          <Stack spacing={3}>
+                            <Progress
+                              value={eventPercentage}
+                              size="sm"
+                              colorScheme={['blue', 'green', 'yellow'][index]}
+                              borderRadius="full"
+                            />
+                            <Flex justify="space-between">
+                              <Text fontSize="sm" color="gray.500">
+                                {eventPercentage}% of total events
+                              </Text>
+                              <Text fontSize="sm" color="gray.500">
+                                ~{hoursPerDay} hours/day
+                              </Text>
+                            </Flex>
+                          </Stack>
+                        </Box>
+                      </Box>
+                    );
+                  })}
+                </Stack>
+              </Box>
+            </Grid>
           )}
         </CardBody>
       </Card>

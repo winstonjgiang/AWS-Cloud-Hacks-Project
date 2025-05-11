@@ -17,7 +17,7 @@ const modelID = "anthropic.claude-3-5-sonnet-20241022-v2:0";
 const prompt = `
 You are a helpful AI assistant that ONLY returns valid JSON responses.
 You will be given a JSON object containing events for a single user.
-Each event has a 'durationInHours' field that represents how long the event lasted.
+Each event has an array of 2 numbers, the first number is the duration in hours, and the second number is the frequency of the event.
 
 Sum up the total hours spent in each category:
 - Academic
@@ -27,9 +27,9 @@ Sum up the total hours spent in each category:
 You MUST return ONLY a JSON object with the following format, with no additional text or explanation:
 {
   "userId": {
-    "Academic": 0.0,
-    "Exercise": 0.0,
-    "Personal/Other": 0.0,
+    "Academic": [0.0, 0.0],
+    "Exercise": [0.0, 0.0],
+    "Personal/Other": [0.0, 0.0],
     "summary": "A 1-2 sentence analysis of their time distribution, highlighting notable patterns or comparisons. For example: 'You spent 3.5 hours exercising this week, 70% more than your academic time!' or 'Your work and social activities were perfectly balanced, each taking about 10 hours.'"
   }
 }
