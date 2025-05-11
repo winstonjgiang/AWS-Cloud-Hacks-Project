@@ -16,6 +16,7 @@ import {
   useColorModeValue,
   Skeleton,
   SkeletonText,
+  Spinner,
 } from "@chakra-ui/react";
 import CategoryPieChart from "./CategoryPieChart";
 import AdditionalDetailPanel from "./AdditionalDetailPanel";
@@ -44,13 +45,17 @@ export default function VisualizationSection({ categoryData, isLoading, recurrin
           </Heading>
           <Box height="400px" position="relative">
             <Flex direction="column" align="center" justify="center" height="100%" gap={4}>
-              <Skeleton height="200px" width="200px" borderRadius="full" />
-              <SkeletonText
-                noOfLines={2}
-                spacing="4"
-                skeletonHeight="4"
-                textAlign="center"
+              <Spinner
+                thickness='4px'
+                speed='0.65s'
+                emptyColor='gray.200'
+                color={accentColor}
+                size='xl'
+                label='Loading data'
               />
+              <Text color="gray.500" fontSize="sm">
+                Loading your weekly insights...
+              </Text>
             </Flex>
           </Box>
         </CardBody>
