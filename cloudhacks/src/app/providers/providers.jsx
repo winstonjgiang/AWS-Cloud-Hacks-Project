@@ -1,6 +1,8 @@
 'use client';
 
+import { ChakraProvider } from '@chakra-ui/react';
 import { AuthProvider } from 'react-oidc-context';
+import theme from '../theme';
 
 const cognitoAuthConfig = {
   authority: process.env.NEXT_PUBLIC_OIDC_AUTHORITY,
@@ -13,7 +15,9 @@ const cognitoAuthConfig = {
 export function Providers({ children }) {
   return (
     <AuthProvider {...cognitoAuthConfig}>
-      {children}
+      <ChakraProvider theme={theme}>
+        {children}
+      </ChakraProvider>
     </AuthProvider>
   );
 }

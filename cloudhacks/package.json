@@ -12,15 +12,22 @@
     "@aws-sdk/client-bedrock-runtime": "^3.806.0",
     "@aws-sdk/client-dynamodb": "^3.806.0",
     "@aws-sdk/lib-dynamodb": "^3.806.0",
+    "@chakra-ui/icons": "^2.2.4",
+    "@chakra-ui/react": "^2.8.2",
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
     "axios": "^1.9.0",
+    "framer-motion": "^11.0.3",
     "gapi-script": "^1.2.0",
     "next": "15.3.2",
     "next-auth": "^4.24.11",
     "oidc-client-ts": "^3.2.1",
+
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-oidc-context": "^3.3.0",
     "recharts": "^2.15.3"
+
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -28,8 +35,8 @@
     "@types/gapi.auth2": "^0.0.61",
     "@types/gapi.client": "^1.0.8",
     "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

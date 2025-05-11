@@ -8,55 +8,100 @@ import axios from 'axios';
 import { testBedrockAPI } from '../services/bedrock';
 import CategoryPieChart from './components/CategoryPieChart';
 
+
+import { useAuth } from "react-oidc-context";
+import { useEffect, useState } from "react";
+import { userMap, eventMap } from "../utils/userMap";
+import { tokenManager } from "../utils/tokenManager";
+import ChakraNav from "./ui/ChakraNav";
+import loadGapiClient from "../utils/gapi";
+import axios from "axios";
+import LoginForm from "./components/LoginForm";
+import UserDashboard from "./components/UserDashboard";
 export default function Dashboard() {
   const auth = useAuth();
-  const [events, setEvents] = useState([]);
-  const [accessToken, setAccessToken] = useState(null);
+
   const [categoryData, setCategoryData] = useState(null);
 
+	const analyzeData = async () => {
+		const analysis = await testBedrockAPI(result.events);
+		if (analysis && Object.keys(analysis).length > 0) {
+			const userId = Object.keys(analysis)[0];
+			const userData = analysis[userId];
+			const chartData = Object.entries(userData)
+				.filter(([key]) => key !== 'summary')
+				.map(([name, value]) => ({ name, value }));
+			setCategoryData(chartData);
+		}
+	};
   const fetchEvents = async () => {
-    const result = await loadGapiClient(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
-    setEvents((result && result.events) || []);
-    setAccessToken((result && result.accessToken) || null);
-    return result;
+    try {
+      const googleResponse = await loadGapiClient(
+        process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
+      );
+      return googleResponse;
+    } catch (error) {
+      console.error("Failed to fetch events:", error);
+      return null;
+    }
   };
 
   useEffect(() => {
-    if (!auth || !auth.isAuthenticated) {
-      return;
-    }
-    const authenticated = userMap(auth);
-    if (authenticated) {
-      axios.post('/api/create-user', authenticated);
-      fetchEvents().then(async (result) => {
-        if (result && result.events) {
-          try {
-            const analysis = await testBedrockAPI(result.events);
-            if (analysis && Object.keys(analysis).length > 0) {
-              const userId = Object.keys(analysis)[0];
-              const userData = analysis[userId];
-              const chartData = Object.entries(userData)
-                .filter(([key]) => key !== 'summary')
-                .map(([name, value]) => ({ name, value }));
-              setCategoryData(chartData);
-            }
-          } catch (error) {
-            console.error("Error analyzing events:", error);
-          }
+    const initializeDashboard = async () => {
+      if (!auth || !auth.isAuthenticated) {
+        return;
+      }
+
+      try {
+        const googleResponse = await fetchEvents();
+        const { events } = googleResponse;
+        console.log("Google Response:", googleResponse.googleUser);
+
+        if (googleResponse) {
+          const authenticated = userMap(auth, googleResponse.googleUser);
+          await axios.post("/api/user", authenticated);
+
+          const post_events = events.map((event) => {
+            const event_promise = eventMap(
+              googleResponse.googleUser.googleId,
+              event
+            );
+            return axios.post("/api/events", event_promise);
+          });
+
+          const results = await Promise.all(post_events);
+          console.log("All events processed:", results);
         }
-      });
-    }
+      } catch (error) {
+        console.error("Failed to initialize dashboard:", error);
+      }
+    };
+
+    initializeDashboard();
   }, [auth]);
 
   return (
-    <div className="p-4">
-      {auth.isAuthenticated ? 'Authenticated' : 'Not authenticated'}
-      <button onClick={() => auth.signinRedirect()}>Sign in</button>
-      {categoryData ? (
-        <CategoryPieChart data={categoryData} />
-      ) : (
-        <div>Loading category data...</div>
-      )}
-    </div>
+		<>
+			<ChakraNav />
+
+			<div>
+				{auth.isAuthenticated ? (
+					<UserDashboard />
+				) : (
+					<LoginForm auth={auth} />
+				)}
+
+				<h1>{tokenManager.getToken()}</h1>
+
+				{categoryData ? (
+					<CategoryPieChart data={categoryData} />
+				) : (
+					<div>Loading category data...</div>
+				)}
+
+				{/* You can render events here if needed */}
+			</div>
+		</>
   );
 }
+

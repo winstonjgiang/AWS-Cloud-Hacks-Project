@@ -1,25 +1,22 @@
-// src/app/services/userService.js
 import { PutCommand, DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import { dynamo } from '../configs/dynamo';
 
 const client = DynamoDBDocumentClient.from(dynamo);
 
-export async function createUser(user) {
+export async function createEvent(event) {
   const command = new PutCommand({
-    TableName: 'Users',
+    TableName: 'Events',
     Item: {
-      userId:    user.userId,
-      email:     user.email,
-      createdAt: user.createdAt,
-      name:      user.name,
-      googleId:  user.googleId
+        userId: event.userId,
+        summary: event.summary,
+        start: event.start,
+        end: event.end,
     },
   });
-
   try {
     await client.send(command);
   } catch (error) {
-    console.error('Error creating user:', error);
+    console.error('Error creating event:', error);
     throw error;
   }
 }

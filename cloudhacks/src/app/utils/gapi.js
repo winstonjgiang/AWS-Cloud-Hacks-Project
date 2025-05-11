@@ -1,6 +1,6 @@
 'use client';
-
-export default async function loadGapiClient(clientId) {
+import { oneWeekBefore, today } from './time';
+async function loadGapiClient(clientId) {
   if (typeof window === 'undefined') {
     return null;
   }
@@ -26,6 +26,12 @@ export default async function loadGapiClient(clientId) {
 
   // Get the current user
   const googleUser = auth.currentUser.get();
+  const googleUserInfo = googleUser.getBasicProfile();
+  const userInfo = {
+    googleId: googleUserInfo.getId(),
+    email: googleUserInfo.getEmail(),
+    name: googleUserInfo.getName(),
+  };
 
   // Get the auth response which contains the access token
   const authResponse = googleUser.getAuthResponse();
@@ -42,11 +48,15 @@ export default async function loadGapiClient(clientId) {
       calendarId: 'primary',
       singleEvents: true,
       orderBy: 'startTime',
+      timeMin: oneWeekBefore(),
+      timeMax: today(),
     });
 
     console.log('Google Access Token:', accessToken);
 
+
     return {
+      googleUser: userInfo,
       events: response.result.items,
       accessToken: accessToken
     };
@@ -55,3 +65,5 @@ export default async function loadGapiClient(clientId) {
     return null;
   }
 }
+
+export default loadGapiClient;
