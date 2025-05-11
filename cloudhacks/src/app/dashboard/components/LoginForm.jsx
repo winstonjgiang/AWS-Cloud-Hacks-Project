@@ -9,7 +9,7 @@ import {
   Stack,
   useColorModeValue,
 } from '@chakra-ui/react'
-import CalendarStatsDemo from './demo'
+import CalendarStatsDemo from './Demo'
 
 export default function LoginForm({ auth }) {
   const bg = useColorModeValue('gray.50', 'gray.800')
