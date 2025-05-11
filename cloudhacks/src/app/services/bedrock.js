@@ -13,7 +13,6 @@ export async function invokeBedrockAPI(events) {
     }
 
     const result = await response.json();
-    console.log("Test successful! Model response:", result);
     return result;
   } catch (error) {
     console.error("Error testing Bedrock API:", error);
