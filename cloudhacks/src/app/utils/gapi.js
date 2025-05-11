@@ -1,6 +1,6 @@
 'use client';
-
-export default async function loadGapiClient(clientId) {
+import { oneWeekBefore, today } from './time';
+async function loadGapiClient(clientId) {
   if (typeof window === 'undefined') {
     return null;
   }
@@ -48,6 +48,8 @@ export default async function loadGapiClient(clientId) {
       calendarId: 'primary',
       singleEvents: true,
       orderBy: 'startTime',
+      timeMin: oneWeekBefore(),
+      timeMax: today(),
     });
 
     console.log('Google Access Token:', accessToken);
@@ -63,3 +65,5 @@ export default async function loadGapiClient(clientId) {
     return null;
   }
 }
+
+export default loadGapiClient;

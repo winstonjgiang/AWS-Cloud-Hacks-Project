@@ -1,24 +1,23 @@
-'use client';
+"use client";
 
-import { useAuth } from 'react-oidc-context';
-import { useEffect, useState } from 'react';
-import { userMap } from '../utils/userMap';
-import loadGapiClient from '../utils/gapi';
-import axios from 'axios';
+import { useAuth } from "react-oidc-context";
+import { useEffect, useState } from "react";
+import { userMap, eventMap } from "../utils/userMap";
+import { tokenManager } from "../utils/tokenManager";
+import loadGapiClient from "../utils/gapi";
+import axios from "axios";
+import LoginForm from "../LoginForm";
 
 export default function Dashboard() {
   const auth = useAuth();
-  const [events, setEvents] = useState([]);
-  const [accessToken, setAccessToken] = useState(null);
-
   const fetchEvents = async () => {
     try {
-      const googleResponse = await loadGapiClient(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
-      setEvents((googleResponse && googleResponse.events) || []);
-      setAccessToken((googleResponse && googleResponse.accessToken) || null);
+      const googleResponse = await loadGapiClient(
+        process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
+      );
       return googleResponse;
     } catch (error) {
-      console.error('Failed to fetch events:', error);
+      console.error("Failed to fetch events:", error);
       return null;
     }
   };
@@ -31,15 +30,23 @@ export default function Dashboard() {
 
       try {
         const googleResponse = await fetchEvents();
-        console.log('Google Response:', googleResponse.googleUser);
-        
+        const { events } = googleResponse;
+        console.log("Google Response:", googleResponse.googleUser);
+
         if (googleResponse) {
           const authenticated = userMap(auth, googleResponse.googleUser);
-          console.log('Authenticated User:', authenticated);
-          await axios.post('/api/create-user', authenticated);
+          await axios.post("/api/user", authenticated);
+
+          const post_events = events.map(event => {
+            const event_promise = eventMap(googleResponse.googleUser.googleId, event);
+            return axios.post("/api/events", event_promise);
+          });
+
+          const results = await Promise.all(post_events);
+          console.log("All events processed:", results);
         }
       } catch (error) {
-        console.error('Failed to initialize dashboard:', error);
+        console.error("Failed to initialize dashboard:", error);
       }
     };
 
@@ -48,9 +55,9 @@ export default function Dashboard() {
 
   return (
     <div>
-      {auth.isAuthenticated ? 'Authenticated' : 'Not authenticated'}
-      <button onClick={() => auth.signinRedirect()}>Sign in</button>
-      <h1>{accessToken}</h1>
+      {auth.isAuthenticated ? "Authenticated" : "Not authenticated"}
+      <LoginForm auth={auth} />
+      <h1>{tokenManager.getToken()}</h1>
       {/* You can render events here if needed */}
     </div>
   );
