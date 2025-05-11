@@ -31,7 +31,6 @@ export default function LoginForm({ auth, setPage }) {
     >
       <Flex
         direction={{ base: 'column', md: 'row' }}
-        bg={cardBg}
         boxShadow="lg"
         borderRadius="xl"
         overflow="hidden"

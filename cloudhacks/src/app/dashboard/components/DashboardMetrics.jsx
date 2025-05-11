@@ -4,7 +4,7 @@ import { BookOpen, Activity, Heart, Clock } from 'lucide-react';
 
 export default function DashboardMetrics() {
   return (
-    <Box bg="white" p={8} rounded="lg" shadow="sm">
+    <Box bg="white" p={8} rounded="lg" shadow="sm" border="1px solid" borderColor="gray.100" boxShadow="0 0 10px 0 rgba(0, 0, 0, 0.1)">
       {/* Header */}
       <Box mb={6}>
         <Heading as="h1" size="xl" color="gray.800" mb={2}>
