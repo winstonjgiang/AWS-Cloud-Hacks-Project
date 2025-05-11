@@ -16,7 +16,6 @@ import {
   Link as ChakraLink,
   Text,
 } from "@chakra-ui/react";
-import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import Logo from "./Logo";
 
 export default function ChakraNav({ auth, page, setPage, isAuthenticated, setIsAuthenticated }) {
@@ -49,7 +48,7 @@ export default function ChakraNav({ auth, page, setPage, isAuthenticated, setIsA
   }
 
   return (
-    <Box bg={bgColor} px={4} boxShadow="sm">
+    <Box bg={bgColor} px={4} boxShadow="sm" position="relative" width="100%" zIndex={1000}>
       <Flex h={16} alignItems="center" justifyContent="space-between">
 
         {/* Logo + desktop nav */}
@@ -78,7 +77,6 @@ export default function ChakraNav({ auth, page, setPage, isAuthenticated, setIsA
                 fontSize="md"
                 fontWeight="500"
                 color={page === item.key ? activeTextColor : textColor}
-                bg={page === item.key ? activeBg : "transparent"}
                 transition="all 0.2s"
                 position="relative"
                 _hover={{

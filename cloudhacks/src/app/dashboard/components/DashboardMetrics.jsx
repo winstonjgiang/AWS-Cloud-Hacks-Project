@@ -2,9 +2,30 @@ import React from 'react';
 import { Box, Grid, Flex, Heading, Text, Icon, Progress, Stack } from '@chakra-ui/react';
 import { BookOpen, Activity, Heart, Clock } from 'lucide-react';
 
+
 export default function DashboardMetrics() {
   return (
-    <Box bg="white" p={8} rounded="lg" shadow="sm" border="1px solid" borderColor="gray.100" boxShadow="0 0 10px 0 rgba(0, 0, 0, 0.1)">
+    <Box 
+      bg="white" 
+      p={8} 
+      rounded="lg" 
+      boxShadow="-20px 20px 20px -5px rgba(0, 0, 0, 0.1), 0 8px 16px -8px rgba(0, 0, 0, 0.3)"
+      border="1px solid" 
+      borderColor="gray.100"
+      mx={4}
+      my={4}
+      position="relative"
+      _before={{
+        content: '""',
+        position: "absolute",
+        top: -2,
+        left: -2,
+        right: -2,
+        bottom: -2,
+        background: "transparent",
+        zIndex: -1,
+      }}
+    >
       {/* Header */}
       <Box mb={6}>
         <Heading as="h1" size="xl" color="gray.800" mb={2}>
