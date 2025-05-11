@@ -15,8 +15,6 @@ export default function Dashboard() {
   const [categoryData, setCategoryData] = useState(null);
   const [googleUser, setGoogleUser] = useState(null);
 
-
-
   const fetchEvents = async () => {
     try {
       const googleResponse = await loadGapiClient(
@@ -42,7 +40,6 @@ export default function Dashboard() {
       try {
         const googleResponse = await fetchEvents();
         if (!googleResponse) return;
-
 
         const { googleUser, events: fetchedEvents } = googleResponse;
         setGoogleUser(googleUser);
@@ -74,10 +71,8 @@ export default function Dashboard() {
           });
           const results = await Promise.all(post_events);
           console.log("All events processed:", results);
-        await analyzeData(fetchedEvents, googleUser, setCategoryData);
-          
         }
-
+        await analyzeData(fetchedEvents, googleUser, setCategoryData);
       } catch (error) {
         console.error("Failed to initialize dashboard:", error);
       }
@@ -94,7 +89,7 @@ export default function Dashboard() {
         {auth.isAuthenticated ? (
           <UserDashboard categoryData={categoryData} />
         ) : (
-          <LoginForm auth={auth}  />
+          <LoginForm auth={auth} />
         )}
 
         <h1>googleID: {googleUser?.googleId}</h1>
